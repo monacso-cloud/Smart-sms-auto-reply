@@ -145,9 +145,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Keyword rules (keywords separated by commas, then =&gt; reply)"
+            android:text="Keyword rules (customer choice or words, then =&gt; reply)"
             android:textColor="#526278"
             android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/loadMenuTemplateButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:text="Load suggested 1–4 chatbot menu"
+            android:textAllCaps="false" />
 
         <EditText
             android:id="@+id/chatbotRulesInput"
@@ -170,7 +178,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:text="Reply when no keyword matches"
+            android:text="Chatbot welcome menu (reply when no keyword matches)"
             android:textColor="#0B1F3A"
             android:textSize="16sp"
             android:textStyle="bold" />
