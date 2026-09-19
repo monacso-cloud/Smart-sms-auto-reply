@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart SMS Reply</string>
+    <string name="default_message">Hi, thank you for calling Ying Thai Integrative Therapy. I’m currently with a client and unable to answer. Book online: https://yingthairemedialmassage2.clinicsense.com You can also reply to this SMS and I’ll get back to you as soon as possible. Warm regards, Ying</string>
+    <string-array name="delay_labels">
+        <item>No delay</item>
+        <item>15 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+    </string-array>
+</resources>
