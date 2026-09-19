@@ -16,7 +16,7 @@ jobs:
       - name: Unpack Android project
         shell: bash
         run: |
-          ZIP_FILE=$(find . -maxdepth 1 -type f -name 'Smart-SMS-Reply-Beta-Source*.zip' | head -n 1)
+          ZIP_FILE=$(find . -maxdepth 1 -type f -name 'Smart-SMS-Reply-Advanced-Source*.zip' | head -n 1)
           test -n "$ZIP_FILE"
           mkdir -p extracted
           unzip -q "$ZIP_FILE" -d extracted
