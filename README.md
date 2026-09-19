@@ -19,6 +19,5 @@ The app now records carrier/SIM errors instead of silently ignoring them. Do not
 
 - `app/`: Android source
 - `.github/workflows/main.yml`: reproducible APK build
-- `railway/`: paused licensing-service work; do not deploy before device testing passes
-
 Old Beta ZIP files are intentionally not used by the build workflow.
+Railway licensing remains paused until the real-device tests above pass.
