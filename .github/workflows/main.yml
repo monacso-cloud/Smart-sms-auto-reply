@@ -48,6 +48,21 @@ jobs:
           path: ~/.android/debug.keystore
           key: smart-sms-reply-test-signing-v1
 
+      - name: Create test signing key on first build
+        run: |
+          mkdir -p "$HOME/.android"
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            keytool -genkeypair -v \
+              -keystore "$HOME/.android/debug.keystore" \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -dname "CN=Smart SMS Reply Test,O=Ying Thai,C=AU" \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000
+          fi
+
       - name: Build debug APK
         run: gradle clean assembleDebug --stacktrace
 
