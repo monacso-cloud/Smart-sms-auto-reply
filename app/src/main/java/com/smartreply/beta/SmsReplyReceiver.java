@@ -78,7 +78,14 @@ public class SmsReplyReceiver extends BroadcastReceiver {
             String reply = line.substring(separator + 2).trim();
             for (String keyword : keywords.split(",")) {
                 String clean = keyword.trim().toLowerCase(Locale.ROOT);
-                if (!clean.isEmpty() && incoming.contains(clean)) return reply;
+                if (clean.isEmpty()) continue;
+                // Menu numbers must match the whole message. Without this check,
+                // a phone number or time containing "1" could trigger option 1.
+                if (clean.matches("[1-9]")) {
+                    if (incoming.equals(clean)) return reply;
+                } else if (incoming.contains(clean)) {
+                    return reply;
+                }
             }
         }
         return null;
