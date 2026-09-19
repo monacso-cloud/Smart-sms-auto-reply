@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
+import android.net.Uri;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,8 +32,14 @@ public class MainActivity extends Activity {
     private Switch enabledSwitch;
     private EditText messageInput;
     private Spinner delaySpinner;
+    private Spinner repeatSpinner;
     private Spinner simSpinner;
+    private Switch chatbotSwitch;
+    private EditText chatbotRulesInput;
+    private EditText fallbackInput;
     private TextView statusText;
+    private TextView permissionStatusText;
+    private EditText testNumberInput;
     private final List<Integer> subscriptionIds = new ArrayList<>();
 
     @Override
@@ -41,14 +50,27 @@ public class MainActivity extends Activity {
         enabledSwitch = findViewById(R.id.enabledSwitch);
         messageInput = findViewById(R.id.messageInput);
         delaySpinner = findViewById(R.id.delaySpinner);
+        repeatSpinner = findViewById(R.id.repeatSpinner);
         simSpinner = findViewById(R.id.simSpinner);
+        chatbotSwitch = findViewById(R.id.chatbotSwitch);
+        chatbotRulesInput = findViewById(R.id.chatbotRulesInput);
+        fallbackInput = findViewById(R.id.fallbackInput);
         statusText = findViewById(R.id.statusText);
+        permissionStatusText = findViewById(R.id.permissionStatusText);
+        testNumberInput = findViewById(R.id.testNumberInput);
         Button saveButton = findViewById(R.id.saveButton);
+        Button permissionButton = findViewById(R.id.permissionButton);
+        Button testSmsButton = findViewById(R.id.testSmsButton);
 
         ArrayAdapter<CharSequence> delayAdapter = ArrayAdapter.createFromResource(
                 this, R.array.delay_labels, android.R.layout.simple_spinner_item);
         delayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         delaySpinner.setAdapter(delayAdapter);
+
+        ArrayAdapter<CharSequence> repeatAdapter = ArrayAdapter.createFromResource(
+                this, R.array.repeat_labels, android.R.layout.simple_spinner_item);
+        repeatAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        repeatSpinner.setAdapter(repeatAdapter);
 
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         if (!prefs.contains("last_processed_call")) {
@@ -58,13 +80,36 @@ public class MainActivity extends Activity {
         enabledSwitch.setChecked(prefs.getBoolean("enabled", false));
         messageInput.setText(prefs.getString("message", getString(R.string.default_message)));
         delaySpinner.setSelection(delayToIndex(prefs.getInt("delay_seconds", 30)));
+        repeatSpinner.setSelection(repeatToIndex(prefs.getInt("repeat_minutes", 0)));
+        chatbotSwitch.setChecked(prefs.getBoolean("chatbot_enabled", false));
+        chatbotRulesInput.setText(prefs.getString("chatbot_rules", getString(R.string.default_chatbot_rules)));
+        fallbackInput.setText(prefs.getString("chatbot_fallback", getString(R.string.default_chatbot_fallback)));
 
         saveButton.setOnClickListener(v -> saveSettings());
-        enabledSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> updateStatus());
+        permissionButton.setOnClickListener(v -> handlePermissionButton());
+        testSmsButton.setOnClickListener(v -> sendTestSms());
+        enabledSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                    .putBoolean("enabled", isChecked)
+                    .apply();
+            updateStatus();
+        });
+        chatbotSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+                getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                        .putBoolean("chatbot_enabled", isChecked)
+                        .apply());
 
         requestRequiredPermissions();
         loadSimCards();
         updateStatus();
+        updatePermissionStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStatus();
+        updatePermissionStatus();
     }
 
     private void requestRequiredPermissions() {
@@ -78,9 +123,46 @@ public class MainActivity extends Activity {
         if (checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
             missing.add(Manifest.permission.SEND_SMS);
         }
+        if (checkSelfPermission(Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
+            missing.add(Manifest.permission.RECEIVE_SMS);
+        }
         if (!missing.isEmpty()) {
             requestPermissions(missing.toArray(new String[0]), PERMISSION_REQUEST);
         }
+    }
+
+    private void handlePermissionButton() {
+        if (hasAllPermissions()) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        } else {
+            requestRequiredPermissions();
+        }
+    }
+
+    private boolean hasAllPermissions() {
+        return checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void updatePermissionStatus() {
+        StringBuilder text = new StringBuilder("Required permissions\n");
+        appendPermission(text, "Phone", Manifest.permission.READ_PHONE_STATE);
+        appendPermission(text, "Call log", Manifest.permission.READ_CALL_LOG);
+        appendPermission(text, "Send SMS", Manifest.permission.SEND_SMS);
+        appendPermission(text, "Receive SMS", Manifest.permission.RECEIVE_SMS);
+        if (!hasAllPermissions()) {
+            text.append("\nIf Samsung blocks SMS: App info → three-dot menu → Allow restricted settings, then return here.");
+        }
+        permissionStatusText.setText(text.toString());
+    }
+
+    private void appendPermission(StringBuilder text, String label, String permission) {
+        boolean granted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+        text.append(granted ? "✓ " : "✕ ").append(label).append(granted ? ": allowed\n" : ": not allowed\n");
     }
 
     private void loadSimCards() {
@@ -114,14 +196,15 @@ public class MainActivity extends Activity {
         simSpinner.setSelection(selectedIndex >= 0 ? selectedIndex : 0);
     }
 
-    private void saveSettings() {
+    private boolean saveSettings() {
         String message = messageInput.getText().toString().trim();
         if (message.isEmpty()) {
             messageInput.setError("Please enter an auto-reply message");
-            return;
+            return false;
         }
 
         int delay = indexToDelay(delaySpinner.getSelectedItemPosition());
+        int repeatMinutes = indexToRepeat(repeatSpinner.getSelectedItemPosition());
         int simIndex = Math.max(0, simSpinner.getSelectedItemPosition());
         int subscriptionId = subscriptionIds.get(Math.min(simIndex, subscriptionIds.size() - 1));
 
@@ -129,11 +212,47 @@ public class MainActivity extends Activity {
                 .putBoolean("enabled", enabledSwitch.isChecked())
                 .putString("message", message)
                 .putInt("delay_seconds", delay)
+                .putInt("repeat_minutes", repeatMinutes)
                 .putInt("subscription_id", subscriptionId)
+                .putBoolean("chatbot_enabled", chatbotSwitch.isChecked())
+                .putString("chatbot_rules", chatbotRulesInput.getText().toString().trim())
+                .putString("chatbot_fallback", fallbackInput.getText().toString().trim())
                 .apply();
 
         updateStatus();
         Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    private void sendTestSms() {
+        if (!hasAllPermissions()) {
+            updatePermissionStatus();
+            Toast.makeText(this, "Allow all four permissions before testing", Toast.LENGTH_LONG).show();
+            requestRequiredPermissions();
+            return;
+        }
+        String number = testNumberInput.getText().toString().trim();
+        if (number.isEmpty()) {
+            testNumberInput.setError("Enter another phone number, including country code");
+            return;
+        }
+        if (!saveSettings()) return;
+        try {
+            SmsSender.send(this, number, messageInput.getText().toString().trim(), "manual_test");
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                    .putString("last_sms_status", "Sending test SMS…")
+                    .putString("last_error", "")
+                    .apply();
+            updateStatus();
+            Toast.makeText(this, "Test SMS requested. Check status below in a few seconds.", Toast.LENGTH_LONG).show();
+        } catch (Exception error) {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                    .putString("last_error", error.getClass().getSimpleName() + ": " + error.getMessage())
+                    .putString("last_sms_status", "Test failed before sending")
+                    .apply();
+            updateStatus();
+            Toast.makeText(this, "Test failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void updateStatus() {
@@ -141,6 +260,8 @@ public class MainActivity extends Activity {
         boolean enabled = enabledSwitch.isChecked();
         long lastSent = prefs.getLong("last_sent_at", 0L);
         String lastNumber = prefs.getString("last_sent_number", "");
+        String smsStatus = prefs.getString("last_sms_status", "No SMS test recorded yet");
+        String lastError = prefs.getString("last_error", "");
 
         StringBuilder text = new StringBuilder(enabled ? "Auto reply is ON" : "Auto reply is OFF");
         if (lastSent > 0) {
@@ -150,6 +271,8 @@ public class MainActivity extends Activity {
                     .append(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
                             .format(new Date(lastSent)));
         }
+        text.append("\nSMS status: ").append(smsStatus);
+        if (!lastError.isEmpty()) text.append("\nError: ").append(lastError);
         statusText.setText(text.toString());
     }
 
@@ -170,6 +293,17 @@ public class MainActivity extends Activity {
         return delays[Math.max(0, Math.min(index, delays.length - 1))];
     }
 
+    private int repeatToIndex(int minutes) {
+        int[] values = {0, 15, 60, 360, 720, 1440};
+        for (int i = 0; i < values.length; i++) if (values[i] == minutes) return i;
+        return 0;
+    }
+
+    private int indexToRepeat(int index) {
+        int[] values = {0, 15, 60, 360, 720, 1440};
+        return values[Math.max(0, Math.min(index, values.length - 1))];
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -185,6 +319,7 @@ public class MainActivity extends Activity {
             if (!allGranted) {
                 Toast.makeText(this, "Phone, call log and SMS permissions are required", Toast.LENGTH_LONG).show();
             }
+            updatePermissionStatus();
         }
     }
 }

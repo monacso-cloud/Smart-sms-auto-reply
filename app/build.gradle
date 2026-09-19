@@ -1,0 +1,27 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.smartreply.beta'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.smartreply.beta'
+        minSdk 26
+        targetSdk 35
+        versionCode 4
+        versionName '0.4.0-repaired'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.work:work-runtime:2.9.1'
+}
