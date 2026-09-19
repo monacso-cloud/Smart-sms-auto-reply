@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
         Button saveButton = findViewById(R.id.saveButton);
         Button permissionButton = findViewById(R.id.permissionButton);
         Button testSmsButton = findViewById(R.id.testSmsButton);
+        Button loadMenuTemplateButton = findViewById(R.id.loadMenuTemplateButton);
 
         ArrayAdapter<CharSequence> delayAdapter = ArrayAdapter.createFromResource(
                 this, R.array.delay_labels, android.R.layout.simple_spinner_item);
@@ -88,6 +89,7 @@ public class MainActivity extends Activity {
         saveButton.setOnClickListener(v -> saveSettings());
         permissionButton.setOnClickListener(v -> handlePermissionButton());
         testSmsButton.setOnClickListener(v -> sendTestSms());
+        loadMenuTemplateButton.setOnClickListener(v -> loadMenuTemplate());
         enabledSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             getSharedPreferences(PREFS, MODE_PRIVATE).edit()
                     .putBoolean("enabled", isChecked)
@@ -103,6 +105,13 @@ public class MainActivity extends Activity {
         loadSimCards();
         updateStatus();
         updatePermissionStatus();
+    }
+
+    private void loadMenuTemplate() {
+        chatbotRulesInput.setText(getString(R.string.menu_chatbot_rules));
+        fallbackInput.setText(getString(R.string.menu_chatbot_fallback));
+        chatbotSwitch.setChecked(true);
+        Toast.makeText(this, "Menu template loaded. Review it, then tap Save settings.", Toast.LENGTH_LONG).show();
     }
 
     @Override
