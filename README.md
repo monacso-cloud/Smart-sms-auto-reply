@@ -6,7 +6,7 @@ Android test build for missed-call SMS auto reply and a keyword-based SMS chatbo
 
 This version must pass real-device testing before sales or Railway licensing work resumes.
 
-1. Install `Smart-SMS-Reply-Advanced-v0.5.1-Chatbot-Test.apk` from the latest successful GitHub Actions run.
+1. Install `Smart-SMS-Reply-Advanced-v0.5.2-Sale-Template-Test.apk` from the latest successful GitHub Actions run.
 2. Open **Grant or check permissions** and confirm Phone, Call log, Send SMS and Receive SMS are all allowed.
 3. On Samsung sideloaded builds, open App info, use the three-dot menu, choose **Allow restricted settings**, then grant SMS permissions.
 4. Enter a second phone number and use **Send test SMS**. Confirm the in-app status changes to `Sent successfully`.
