@@ -42,16 +42,22 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Keep one stable test signing key
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: smart-sms-reply-test-signing-v1
+
       - name: Build debug APK
         run: gradle clean assembleDebug --stacktrace
 
       - name: Give APK a clear versioned name
-        run: cp app/build/outputs/apk/debug/app-debug.apk Smart-SMS-Reply-Advanced-v0.4-Test.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk Smart-SMS-Reply-Advanced-v0.4.1-Test.apk
 
       - name: Upload test APK
         uses: actions/upload-artifact@v4
         with:
-          name: Smart-SMS-Reply-Advanced-v0.4-Test
-          path: Smart-SMS-Reply-Advanced-v0.4-Test.apk
+          name: Smart-SMS-Reply-Advanced-v0.4.1-Test
+          path: Smart-SMS-Reply-Advanced-v0.4.1-Test.apk
           if-no-files-found: error
           retention-days: 14
