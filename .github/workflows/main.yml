@@ -67,12 +67,12 @@ jobs:
         run: gradle clean assembleDebug --stacktrace
 
       - name: Give APK a clear versioned name
-        run: cp app/build/outputs/apk/debug/app-debug.apk Smart-SMS-Reply-Advanced-v0.5.1-Chatbot-Test.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk Smart-SMS-Reply-Advanced-v0.5.2-Sale-Template-Test.apk
 
       - name: Upload test APK
         uses: actions/upload-artifact@v4
         with:
-          name: Smart-SMS-Reply-Advanced-v0.5.1-Chatbot-Test
-          path: Smart-SMS-Reply-Advanced-v0.5.1-Chatbot-Test.apk
+          name: Smart-SMS-Reply-Advanced-v0.5.2-Sale-Template-Test
+          path: Smart-SMS-Reply-Advanced-v0.5.2-Sale-Template-Test.apk
           if-no-files-found: error
           retention-days: 14
