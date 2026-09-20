@@ -11,8 +11,8 @@ import java.util.Locale;
 public final class LicenseManager {
     private static final String PREFS = "smart_reply_settings";
     private static final String EXPECTED_KEY_HASH =
-            "d073f692ebd8c3e55adf620be905f8aa5cc5a884a8a687d0b88e39c85896f075";
-    private static final long LICENSE_DURATION_MS = 30L * 24L * 60L * 60L * 1000L;
+            "74dc55490f80d7e322e83b7e9181061da348e382390fb07369a1e9f66cae3a33";
+    private static final long LICENSE_DURATION_MS = 14L * 24L * 60L * 60L * 1000L;
 
     private LicenseManager() {}
 
