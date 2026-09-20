@@ -64,7 +64,22 @@ jobs:
           fi
 
       - name: Build debug APK
-        run: gradle clean testDebugUnitTest assembleDebug --stacktrace
+        run: |
+          export SMART_SMS_TEST_KEYSTORE="$HOME/.android/debug.keystore"
+          gradle clean testDebugUnitTest assembleDebug --stacktrace
+
+      - name: Verify signing certificate matches v0.5.2
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs app/build/outputs/apk/debug/app-debug.apk > signer.txt
+          cat signer.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          expected = '8cfc8df429036a80421f794dee8e2b4fd5d691327ee1970ed8e777345cecbee7'
+          lines = Path('signer.txt').read_text().splitlines()
+          actual = [line.split(': ', 1)[1].strip().lower() for line in lines if line.startswith('Signer #1 certificate SHA-256 digest: ')]
+          if actual != [expected]:
+              raise SystemExit('Signing certificate differs from v0.5.2; do not distribute as an in-place update.')
+          PY
 
       - name: Give APK a clear versioned name
         run: cp app/build/outputs/apk/debug/app-debug.apk Smart-SMS-Reply-Advanced-v0.5.3-Menu-Fix-Test.apk
