@@ -2,6 +2,7 @@ package com.smartreply.beta;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -108,6 +109,15 @@ public class MainActivity extends Activity {
     }
 
     private void loadMenuTemplate() {
+        new AlertDialog.Builder(this)
+                .setTitle("Load 1–6 menu template?")
+                .setMessage("This replaces the rules and welcome menu on this screen. Copy any custom replies you want to keep first. Fill in your business details and notice periods, then save.")
+                .setNegativeButton("Keep current replies", null)
+                .setPositiveButton("Load template", (dialog, which) -> applyMenuTemplate())
+                .show();
+    }
+
+    private void applyMenuTemplate() {
         chatbotRulesInput.setText(getString(R.string.menu_chatbot_rules));
         fallbackInput.setText(getString(R.string.menu_chatbot_fallback));
         chatbotSwitch.setChecked(true);
@@ -212,6 +222,15 @@ public class MainActivity extends Activity {
             return false;
         }
 
+        if (chatbotSwitch.isChecked()) {
+            String rules = chatbotRulesInput.getText().toString();
+            String welcome = fallbackInput.getText().toString();
+            if (rules.toLowerCase(java.util.Locale.ROOT).contains("[enter ")
+                    || welcome.toLowerCase(java.util.Locale.ROOT).contains("[enter ")) {
+                chatbotRulesInput.setError("Fill in the business details and notice periods in brackets before enabling the chatbot");
+                return false;
+            }
+        }
         int delay = indexToDelay(delaySpinner.getSelectedItemPosition());
         int repeatMinutes = indexToRepeat(repeatSpinner.getSelectedItemPosition());
         int simIndex = Math.max(0, simSpinner.getSelectedItemPosition());
@@ -281,6 +300,7 @@ public class MainActivity extends Activity {
                             .format(new Date(lastSent)));
         }
         text.append("\nSMS status: ").append(smsStatus);
+        text.append("\nChatbot: ").append(prefs.getString("last_chat_status", "Waiting for an incoming SMS"));
         if (!lastError.isEmpty()) text.append("\nError: ").append(lastError);
         statusText.setText(text.toString());
     }

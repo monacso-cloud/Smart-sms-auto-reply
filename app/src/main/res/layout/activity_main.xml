@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Missed-call auto reply + SMS chatbot — Advanced"
+            android:text="Missed-call auto reply + SMS chatbot — Advanced v0.5.3 test"
             android:textColor="#526278"
             android:textSize="16sp" />
 
@@ -154,7 +154,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="8dp"
-            android:text="Load suggested 1–4 chatbot menu"
+            android:text="Load suggested 1–6 chatbot menu"
             android:textAllCaps="false" />
 
         <EditText
