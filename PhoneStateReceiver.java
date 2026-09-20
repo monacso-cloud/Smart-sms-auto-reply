@@ -24,6 +24,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
         if (!TelephonyManager.EXTRA_STATE_IDLE.equals(state)) return;
+        if (!LicenseManager.isActive(context)) return;
 
         PendingResult pendingResult = goAsync();
         Context appContext = context.getApplicationContext();
@@ -40,6 +41,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
     }
 
     private void processLatestMissedCall(Context context) {
+        if (!LicenseManager.isActive(context)) return;
         if (context.checkSelfPermission(Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED
                 || context.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -80,6 +82,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
             int delaySeconds = prefs.getInt("delay_seconds", 30);
             if (delaySeconds > 0) Thread.sleep(delaySeconds * 1000L);
+            if (!LicenseManager.isActive(context)) return;
 
             String message = prefs.getString("message", context.getString(R.string.default_message));
             int subscriptionId = prefs.getInt(
