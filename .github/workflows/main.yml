@@ -1,9 +1,12 @@
-name: Build Android APK
+name: Build Android Pilot APK
 
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
+      - codex/pilot-license-v0.2
+  pull_request:
 
 jobs:
   build:
@@ -13,37 +16,35 @@ jobs:
       - name: Download project
         uses: actions/checkout@v4
 
-      - name: Unpack Android project
+      - name: Unpack Android project and apply pilot source
         shell: bash
         run: |
+          set -euo pipefail
           ZIP_FILE=$(find . -maxdepth 1 -type f -name 'Smart-SMS-Reply-Advanced-Source*.zip' | head -n 1)
           test -n "$ZIP_FILE"
           mkdir -p extracted
           unzip -q "$ZIP_FILE" -d extracted
           PROJECT_DIR=$(dirname "$(find extracted -type f -name settings.gradle | head -n 1)")
           test -f "$PROJECT_DIR/settings.gradle"
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
-      - name: Apply missed-call reliability fix
-        shell: bash
-        run: |
-          RECEIVER=$(find "$PROJECT_DIR" -type f -name PhoneStateReceiver.java | head -n 1)
-          test -n "$RECEIVER"
-          python3 - "$RECEIVER" <<'PY'
-          import pathlib, sys
-          path = pathlib.Path(sys.argv[1])
-          source = path.read_text()
-          source = source.replace("Thread.sleep(1800L);", "Thread.sleep(5000L);")
-          source = source.replace(
-              'if (now - lastReply < 24L * 60L * 60L * 1000L) return;',
-              '// Every missed call may receive a reply when that option is selected.'
-          )
-          source = source.replace(
-              '} catch (Exception ignored) {\n            // A later version will expose detailed error logs in the dashboard.\n        }',
-              '} catch (Exception error) {\n            android.util.Log.e("SmartSmsReply", "Missed-call auto reply failed", error);\n        }'
-          )
-          path.write_text(source)
-          PY
+          MAIN_DEST=$(find "$PROJECT_DIR" -type f -name MainActivity.java | head -n 1)
+          RECEIVER_DEST=$(find "$PROJECT_DIR" -type f -name PhoneStateReceiver.java | head -n 1)
+          LAYOUT_DEST=$(find "$PROJECT_DIR" -type f -path '*/res/layout/activity_main.xml' | head -n 1)
+          MANIFEST_DEST=$(find "$PROJECT_DIR" -type f -name AndroidManifest.xml | head -n 1)
+          test -n "$MAIN_DEST"
+          test -n "$RECEIVER_DEST"
+          test -n "$LAYOUT_DEST"
+          test -n "$MANIFEST_DEST"
+
+          cp MainActivity.java "$MAIN_DEST"
+          cp PhoneStateReceiver.java "$RECEIVER_DEST"
+          cp LicenseManager.java "$(dirname "$MAIN_DEST")/LicenseManager.java"
+          cp activity_main.xml "$LAYOUT_DEST"
+          cp AndroidManifest.xml "$MANIFEST_DEST"
+          cp build.gradle "$PROJECT_DIR/app/build.gradle"
+          cp proguard-rules.pro "$PROJECT_DIR/app/proguard-rules.pro"
+
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -68,5 +69,6 @@ jobs:
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
-          name: Smart-SMS-Reply-Advanced-Fixed
+          name: Smart-SMS-Reply-Pilot-v0.2
           path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
