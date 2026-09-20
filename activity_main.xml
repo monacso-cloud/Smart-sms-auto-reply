@@ -23,9 +23,52 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Missed-call auto reply — Beta"
+            android:text="Missed-call auto reply — Licensed Pilot"
             android:textColor="#526278"
             android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="License activation"
+            android:textColor="#0B1F3A"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/licenseInput"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:background="#FFFFFF"
+            android:hint="Enter license key"
+            android:inputType="textCapCharacters"
+            android:padding="14dp"
+            android:textColor="#16263D"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/activateButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#00A98F"
+            android:text="Activate license"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/licenseStatusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="#E8F7F3"
+            android:padding="12dp"
+            android:textColor="#075E54"
+            android:textSize="14sp" />
 
         <Switch
             android:id="@+id/enabledSwitch"
