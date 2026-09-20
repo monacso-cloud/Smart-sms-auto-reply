@@ -1,4 +1,4 @@
-name: Build Smart SMS Reply Clean Production Release
+name: Build Smart SMS Reply Production Candidate
 
 on:
   workflow_dispatch:
@@ -33,42 +33,25 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Restore and verify production signing key
-        env:
-          SMART_SMS_RELEASE_KEYSTORE_B64: ${{ secrets.SMART_SMS_RELEASE_KEYSTORE_B64 }}
-          SMART_SMS_RELEASE_STORE_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_STORE_PASSWORD }}
-        run: |
-          test -n "$SMART_SMS_RELEASE_KEYSTORE_B64"
-          test -n "$SMART_SMS_RELEASE_STORE_PASSWORD"
-          mkdir -p "$HOME/.android"
-          printf '%s' "$SMART_SMS_RELEASE_KEYSTORE_B64" | base64 --decode > "$HOME/.android/smart-sms-reply-production-v1.jks"
-          echo "fef9832fc0b18b1d88fdd21f52d7d5459761f49d4e28a3661ba02f1894152f61  $HOME/.android/smart-sms-reply-production-v1.jks" | sha256sum -c -
-          keytool -list -keystore "$HOME/.android/smart-sms-reply-production-v1.jks" -storepass "$SMART_SMS_RELEASE_STORE_PASSWORD" -alias smart-sms-reply >/dev/null
-
-      - name: Run tests and build signed release APK
-        env:
-          SMART_SMS_RELEASE_KEYSTORE: /home/runner/.android/smart-sms-reply-production-v1.jks
-          SMART_SMS_RELEASE_STORE_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_STORE_PASSWORD }}
+      - name: Run tests and build unsigned release APK
         run: |
           gradle clean testDebugUnitTest assembleRelease --stacktrace
 
-      - name: Verify release signature and package
+      - name: Verify production package name
         run: |
-          APK="app/build/outputs/apk/release/app-release.apk"
+          APK="app/build/outputs/apk/release/app-release-unsigned.apk"
           test -f "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > signer.txt
-          cat signer.txt
-          grep -qi "Signer #1 certificate SHA-256 digest: d7d6861e356addbbf5d1fe49762f77d03003ec09eea13c619e47898a2f4192a6" signer.txt
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > package.txt
           grep -q "package: name='com.smartsmsreply.app'" package.txt
 
-      - name: Name release APK
-        run: cp app/build/outputs/apk/release/app-release.apk Smart-SMS-Reply-v1.0.0-RC1-Production-Signed.apk
+      - name: Name unsigned release APK
+        run: |
+          cp app/build/outputs/apk/release/app-release-unsigned.apk Smart-SMS-Reply-v1.0.0-RC1-Unsigned.apk
 
-      - name: Upload release APK
+      - name: Upload unsigned release APK
         uses: actions/upload-artifact@v4
         with:
-          name: Smart-SMS-Reply-v1.0.0-RC1-Production-Signed
-          path: Smart-SMS-Reply-v1.0.0-RC1-Production-Signed.apk
+          name: Smart-SMS-Reply-v1.0.0-RC1-Unsigned
+          path: Smart-SMS-Reply-v1.0.0-RC1-Unsigned.apk
           if-no-files-found: error
           retention-days: 30
