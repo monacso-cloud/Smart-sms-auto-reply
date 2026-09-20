@@ -42,7 +42,8 @@ jobs:
           test -n "$SMART_SMS_RELEASE_STORE_PASSWORD"
           mkdir -p "$HOME/.android"
           printf '%s' "$SMART_SMS_RELEASE_KEYSTORE_B64" | base64 --decode > "$HOME/.android/smart-sms-reply-production-v1.jks"
-          keytool -list -keystore "$HOME/.android/smart-sms-reply-production-v1.jks"             -storepass "$SMART_SMS_RELEASE_STORE_PASSWORD"             -alias smart-sms-reply >/dev/null
+          echo "fef9832fc0b18b1d88fdd21f52d7d5459761f49d4e28a3661ba02f1894152f61  $HOME/.android/smart-sms-reply-production-v1.jks" | sha256sum -c -
+          keytool -list -keystore "$HOME/.android/smart-sms-reply-production-v1.jks" -storepass "$SMART_SMS_RELEASE_STORE_PASSWORD" -alias smart-sms-reply >/dev/null
 
       - name: Run tests and build signed release APK
         env:
