@@ -5,7 +5,7 @@ This pilot sends an automatic SMS after a missed call from the selected Android 
 ## Pilot license
 
 - A license must be activated before SMS settings can be enabled.
-- The free test license starts when first activated and lasts 30 days.
+- The free test license starts when first activated and lasts 14 days.
 - Activation is bound to the Android installation/device identifier.
 - The background receiver checks the license again before sending every SMS.
 - This pilot uses offline validation. Production sales will require a server-backed license service and Stripe webhook so a key cannot be reused across different devices.
@@ -54,4 +54,4 @@ Menu names can vary by Samsung model and Android version. Carrier SMS fees and l
 
 ## Build with GitHub Actions
 
-The workflow assembles a debug pilot APK and uploads it as the **Smart-SMS-Reply-Beta** artifact. A signed release build is required before commercial distribution.
+The workflow assembles a debug pilot APK and uploads it as the **Smart-SMS-Reply-Pilot-v0.2** artifact. A signed release build is required before commercial distribution.
