@@ -28,6 +28,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            // The old APK used a different signer; keep test installations separate.
+            applicationIdSuffix '.menutest'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
