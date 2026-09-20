@@ -35,7 +35,9 @@ android {
         }
         release {
             minifyEnabled false
-            signingConfig signingConfigs.release
+            if (System.getenv('SMART_SMS_RELEASE_KEYSTORE') && System.getenv('SMART_SMS_RELEASE_STORE_PASSWORD')) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
