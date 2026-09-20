@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,9 +27,12 @@ public class MainActivity extends Activity {
 
     private Switch enabledSwitch;
     private EditText messageInput;
+    private EditText licenseInput;
     private Spinner delaySpinner;
     private Spinner simSpinner;
     private TextView statusText;
+    private TextView licenseStatusText;
+    private Button saveButton;
     private final List<Integer> subscriptionIds = new ArrayList<>();
 
     @Override
@@ -40,10 +42,13 @@ public class MainActivity extends Activity {
 
         enabledSwitch = findViewById(R.id.enabledSwitch);
         messageInput = findViewById(R.id.messageInput);
+        licenseInput = findViewById(R.id.licenseInput);
         delaySpinner = findViewById(R.id.delaySpinner);
         simSpinner = findViewById(R.id.simSpinner);
         statusText = findViewById(R.id.statusText);
-        Button saveButton = findViewById(R.id.saveButton);
+        licenseStatusText = findViewById(R.id.licenseStatusText);
+        saveButton = findViewById(R.id.saveButton);
+        Button activateButton = findViewById(R.id.activateButton);
 
         ArrayAdapter<CharSequence> delayAdapter = ArrayAdapter.createFromResource(
                 this, R.array.delay_labels, android.R.layout.simple_spinner_item);
@@ -59,12 +64,48 @@ public class MainActivity extends Activity {
         messageInput.setText(prefs.getString("message", getString(R.string.default_message)));
         delaySpinner.setSelection(delayToIndex(prefs.getInt("delay_seconds", 30)));
 
+        activateButton.setOnClickListener(v -> activateLicense());
         saveButton.setOnClickListener(v -> saveSettings());
         enabledSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> updateStatus());
 
-        requestRequiredPermissions();
-        loadSimCards();
+        refreshLicenseUi();
+        if (LicenseManager.isActive(this)) {
+            requestRequiredPermissions();
+            loadSimCards();
+        }
         updateStatus();
+    }
+
+    private void activateLicense() {
+        LicenseManager.ActivationResult result =
+                LicenseManager.activate(this, licenseInput.getText().toString());
+
+        Toast.makeText(this, result.message, Toast.LENGTH_LONG).show();
+        refreshLicenseUi();
+
+        if (result.success) {
+            licenseInput.setText("");
+            requestRequiredPermissions();
+            loadSimCards();
+        }
+    }
+
+    private void refreshLicenseUi() {
+        boolean active = LicenseManager.isActive(this);
+        enabledSwitch.setEnabled(active);
+        messageInput.setEnabled(active);
+        delaySpinner.setEnabled(active);
+        simSpinner.setEnabled(active);
+        saveButton.setEnabled(active);
+
+        if (!active) {
+            enabledSwitch.setChecked(false);
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean("enabled", false).apply();
+            licenseStatusText.setText("License required or expired");
+        } else {
+            licenseStatusText.setText("Free test license active — "
+                    + LicenseManager.daysRemaining(this) + " days remaining");
+        }
     }
 
     private void requestRequiredPermissions() {
@@ -115,6 +156,12 @@ public class MainActivity extends Activity {
     }
 
     private void saveSettings() {
+        if (!LicenseManager.isActive(this)) {
+            Toast.makeText(this, "Activate a valid license first", Toast.LENGTH_LONG).show();
+            refreshLicenseUi();
+            return;
+        }
+
         String message = messageInput.getText().toString().trim();
         if (message.isEmpty()) {
             messageInput.setError("Please enter an auto-reply message");
@@ -138,11 +185,18 @@ public class MainActivity extends Activity {
 
     private void updateStatus() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        boolean enabled = enabledSwitch.isChecked();
+        boolean active = LicenseManager.isActive(this);
+        boolean enabled = active && enabledSwitch.isChecked();
         long lastSent = prefs.getLong("last_sent_at", 0L);
         String lastNumber = prefs.getString("last_sent_number", "");
 
-        StringBuilder text = new StringBuilder(enabled ? "Auto reply is ON" : "Auto reply is OFF");
+        StringBuilder text = new StringBuilder();
+        if (!active) {
+            text.append("Auto reply is locked — activate a license");
+        } else {
+            text.append(enabled ? "Auto reply is ON" : "Auto reply is OFF");
+        }
+
         if (lastSent > 0) {
             text.append("\nLast reply: ")
                     .append(maskNumber(lastNumber))
