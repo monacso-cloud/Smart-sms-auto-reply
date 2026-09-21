@@ -21,6 +21,11 @@ This document records the agreed first-release direction so future development i
 - Business-neutral templates only. Never ship a customer's personal business information in starter templates.
 - Use editable placeholders such as [BUSINESS NAME], [PRICE], [WEBSITE], [BUSINESS ADDRESS], [BUSINESS HOURS].
 
+## Automated-message disclosure
+- Every automated outbound SMS must identify itself as automated.
+- The app should enforce a disclosure prefix such as `Automated reply:` at send time so businesses do not have to remember to add it manually.
+- This applies to numbered-menu replies, keyword replies, fallback replies, STOP/START confirmations and missed-call auto replies.
+
 ## User guidance
 Every major settings screen should explain:
 1. what the section does,
