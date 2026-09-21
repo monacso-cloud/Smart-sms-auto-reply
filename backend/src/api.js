@@ -441,3 +441,96 @@ api.delete("/businesses/:businessId/call-logs", async (req, res) => {
   );
   res.json({ deleted: result.rowCount || 0 });
 });
+
+
+api.get("/businesses/:businessId/numbered-menu", async (req, res) => {
+  const db = getPool();
+  if (!db) return res.status(503).json({ error: "database_unavailable" });
+
+  const owned = await db.query(
+    "SELECT 1 FROM replydesk_businesses WHERE id = $1 AND owner_account_id = $2",
+    [req.params.businessId, req.auth.accountId]
+  );
+  if (!owned.rowCount) return res.status(404).json({ error: "business_not_found" });
+
+  const settings = await db.query(
+    "SELECT enabled, intro_text, automation_disclosure FROM replydesk_numbered_menu_settings WHERE business_id = $1",
+    [req.params.businessId]
+  );
+  const items = await db.query(
+    `SELECT option_number, label, reply_text, enabled
+       FROM replydesk_numbered_menu_items
+      WHERE business_id = $1
+      ORDER BY option_number`,
+    [req.params.businessId]
+  );
+
+  res.json({
+    settings: settings.rows[0] || {
+      enabled: false,
+      intro_text: "Automated assistant: How can we help? Reply with a number:",
+      automation_disclosure: "Automated reply:",
+    },
+    items: items.rows,
+  });
+});
+
+api.put("/businesses/:businessId/numbered-menu", async (req, res) => {
+  const db = getPool();
+  if (!db) return res.status(503).json({ error: "database_unavailable" });
+
+  const owned = await db.query(
+    "SELECT 1 FROM replydesk_businesses WHERE id = $1 AND owner_account_id = $2",
+    [req.params.businessId, req.auth.accountId]
+  );
+  if (!owned.rowCount) return res.status(404).json({ error: "business_not_found" });
+
+  const enabled = Boolean(req.body?.enabled);
+  const introText = String(req.body?.introText || "Automated assistant: How can we help? Reply with a number:").trim();
+  const disclosure = String(req.body?.automationDisclosure || "Automated reply:").trim() || "Automated reply:";
+  const items = Array.isArray(req.body?.items) ? req.body.items : [];
+
+  for (const item of items) {
+    const option = Number(item.optionNumber);
+    if (!Number.isInteger(option) || option < 1 || option > 10) {
+      return res.status(400).json({ error: "invalid_menu_option" });
+    }
+  }
+
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(
+      `INSERT INTO replydesk_numbered_menu_settings
+       (business_id, enabled, intro_text, automation_disclosure, updated_at)
+       VALUES ($1,$2,$3,$4,NOW())
+       ON CONFLICT (business_id)
+       DO UPDATE SET enabled = EXCLUDED.enabled,
+                     intro_text = EXCLUDED.intro_text,
+                     automation_disclosure = EXCLUDED.automation_disclosure,
+                     updated_at = NOW()`,
+      [req.params.businessId, enabled, introText, disclosure]
+    );
+
+    await client.query("DELETE FROM replydesk_numbered_menu_items WHERE business_id = $1", [req.params.businessId]);
+    for (const item of items) {
+      const label = String(item.label || "").trim();
+      const replyText = String(item.replyText || "").trim();
+      if (!label && !replyText) continue;
+      await client.query(
+        `INSERT INTO replydesk_numbered_menu_items
+         (business_id, option_number, label, reply_text, enabled, updated_at)
+         VALUES ($1,$2,$3,$4,$5,NOW())`,
+        [req.params.businessId, Number(item.optionNumber), label, replyText, item.enabled !== false]
+      );
+    }
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+
+  res.json({ enabled, introText, automationDisclosure: disclosure, items });
+});
