@@ -118,7 +118,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         StringBuilder menu = new StringBuilder();
         if (!intro.isEmpty()) menu.append(intro);
 
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 10; i++) {
             String label = prefs.getString("menu_item_" + i, "").trim();
             if (!label.isEmpty()) {
                 if (menu.length() > 0) menu.append("\n");
