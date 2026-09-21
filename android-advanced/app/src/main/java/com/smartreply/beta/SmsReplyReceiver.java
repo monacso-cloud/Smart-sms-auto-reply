@@ -59,7 +59,8 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         long last = prefs.getLong("chat_last_" + key, 0L);
         if (now - last < 30_000L) return;
 
-        String reply = findReply(normalized, prefs.getString("chatbot_rules", ""));
+        String reply = findMenuReply(normalized, prefs);
+        if (reply == null) reply = findReply(normalized, prefs.getString("chatbot_rules", ""));
         if (reply == null || reply.trim().isEmpty()) {
             reply = prefs.getString("chatbot_fallback", context.getString(R.string.default_chatbot_fallback));
         }
@@ -71,6 +72,13 @@ public class SmsReplyReceiver extends BroadcastReceiver {
                 .putLong("last_sent_at", now)
                 .putString("last_sent_number", sender)
                 .apply();
+    }
+
+    private String findMenuReply(String incoming, SharedPreferences prefs) {
+        if (!prefs.getBoolean("menu_enabled", false)) return null;
+        if (!incoming.matches("[1-4]")) return null;
+        String reply = prefs.getString("menu_reply_" + incoming, "").trim();
+        return reply.isEmpty() ? null : reply;
     }
 
     private String findReply(String incoming, String rules) {
