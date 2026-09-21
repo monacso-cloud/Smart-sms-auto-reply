@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F4F7FB">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+      android:orientation="vertical" android:padding="24dp">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Privacy, Terms &amp; Support" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" android:text="Privacy"
+        android:textStyle="bold" android:textSize="18sp"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="ReplyDesk uses phone and SMS information only for the communication features you enable. ReplyDesk-owned logs can be retained for 7, 14 or 30 days and cleared by the user. Phone numbers are masked where possible in ReplyDesk logs. Full privacy policy and backend data practices will be published before release."
+        android:textColor="#526278" android:textSize="15sp"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" android:text="Terms"
+        android:textStyle="bold" android:textSize="18sp"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Businesses are responsible for configuring ReplyDesk lawfully, keeping automated replies accurate, and complying with applicable messaging, privacy and consumer laws. Carrier SMS charges and limits may apply."
+        android:textColor="#526278" android:textSize="15sp"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" android:text="Support"
+        android:textStyle="bold" android:textSize="18sp"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Support contact details will be configured before public release. This screen is intentionally business-neutral and contains no customer-specific information."
+        android:textColor="#526278" android:textSize="15sp"/>
+  </LinearLayout>
+</ScrollView>
