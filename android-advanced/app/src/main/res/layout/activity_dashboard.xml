@@ -7,7 +7,7 @@
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="ReplyDesk" android:textSize="30sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="6dp" android:text="Business auto reply control centre"
+        android:layout_marginTop="6dp" android:text="Set up ReplyDesk step by step. Start with Auto Reply, then add your Keywords &amp; Replies, choose your Schedule, check Call Logs, and use Test Your Bot before going live."
         android:textSize="16sp" android:textColor="#526278"/>
     <Button android:id="@+id/openAutoReplyButton" android:layout_width="match_parent" android:layout_height="56dp"
         android:layout_marginTop="24dp" android:text="Auto Reply"/>
