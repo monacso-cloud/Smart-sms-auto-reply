@@ -55,7 +55,7 @@ public class MenuSettingsActivity extends Activity {
         };
 
         enabled.setChecked(prefs.getBoolean("menu_enabled", false));
-        intro.setText(prefs.getString("menu_intro", "How can we help? Reply with a number:"));
+        intro.setText(prefs.getString("menu_intro", "Automated assistant: How can we help? Reply with a number:"));
 
         EditText[] labels = new EditText[10];
         EditText[] replies = new EditText[10];
