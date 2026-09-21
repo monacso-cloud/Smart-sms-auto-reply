@@ -5,10 +5,10 @@
   <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
       android:text="Test Your Bot" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
   <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-      android:layout_marginTop="8dp" android:text="Type a message exactly as a customer might send it. ReplyDesk will show which keyword matched and which reply would be sent."
+      android:layout_marginTop="8dp" android:text="Use this section before going live. Type a message exactly as a customer might send it. ReplyDesk will show which keyword matched and the reply it would send. Example: How much is your service?"
       android:textColor="#526278"/>
   <EditText android:id="@+id/testMessageInput" android:layout_width="match_parent" android:layout_height="120dp"
-      android:layout_marginTop="16dp" android:gravity="top|start" android:background="#FFFFFF" android:padding="14dp" android:inputType="textMultiLine"/>
+      android:layout_marginTop="16dp" android:gravity="top|start" android:background="#FFFFFF" android:padding="14dp" android:inputType="textMultiLine" android:hint="Example: How much is your service?"/>
   <Button android:id="@+id/runTestButton" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="12dp" android:text="Test Message"/>
   <TextView android:id="@+id/testBotResult" android:layout_width="match_parent" android:layout_height="wrap_content"
       android:layout_marginTop="16dp" android:background="#E7F0FF" android:padding="16dp" android:textColor="#123966"/>
