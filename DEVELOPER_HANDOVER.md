@@ -1,7 +1,7 @@
-# ReplyDesk: Automated SMS Bot — Developer Handover
+# ReplyDesk: Business SMS Bot — Developer Handover
 
 ## Locked product name
-**ReplyDesk: Automated SMS Bot**
+**ReplyDesk: Business SMS Bot**
 
 The owner has explicitly locked this name. Do not change or substitute the product name without explicit owner approval.
 
@@ -10,7 +10,7 @@ Repository: `monacso-cloud/Smart-sms-auto-reply`
 Primary branch: `production-clean-v1`
 
 ## Android identity
-Customer-facing app name: **ReplyDesk: Automated SMS Bot**  
+Customer-facing app name: **ReplyDesk: Business SMS Bot**  
 Application ID: `com.smartsmsreply.app`  
 Version: `1.0.0-rc2`  
 Target SDK: API 36
@@ -31,12 +31,12 @@ The application ID is intentionally preserved as a technical identifier. Do not 
 - chatbot regression tests
 
 ## Current build status
-GitHub Actions successfully builds production-candidate APK/AAB artifacts from `production-clean-v1`.
+GitHub Actions builds production-candidate APK/AAB artifacts from `production-clean-v1`.
 
 Release artifact names must use the locked ReplyDesk branding:
-- `ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.apk`
-- `ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.aab`
-- final signed AAB should use `ReplyDesk-Automated-SMS-Bot` in its filename
+- `ReplyDesk-Business-SMS-Bot-v1.0.0-RC2-Unsigned.apk`
+- `ReplyDesk-Business-SMS-Bot-v1.0.0-RC2-Unsigned.aab`
+- final signed AAB should use `ReplyDesk-Business-SMS-Bot` in its filename
 
 ## Signing
 Do not commit private keystores or passwords.
