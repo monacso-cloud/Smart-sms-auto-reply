@@ -1,12 +1,12 @@
-# ReplyDesk: Automated SMS Bot
+# ReplyDesk: Business SMS Bot
 
-ReplyDesk: Automated SMS Bot is an Android business SMS automation app for user-configured missed-call replies, incoming SMS keyword/menu replies, configurable business messages, reply timing, repeat controls, SIM selection, and status/error reporting.
+ReplyDesk: Business SMS Bot is an Android business SMS automation app for user-configured missed-call replies, incoming SMS keyword/menu replies, configurable business messages, reply timing, repeat controls, SIM selection, and status/error reporting.
 
 ## Locked product name
 
-**ReplyDesk: Automated SMS Bot**
+**ReplyDesk: Business SMS Bot**
 
-This is the user-approved commercial product name. Do not rename the app, store listing, generated release artifacts, handover documents, or marketing copy without explicit owner approval.
+This is the owner-approved commercial product name. Do not rename the app, store listing, generated release artifacts, handover documents, or marketing copy without explicit owner approval.
 
 ## Android identity
 
@@ -15,7 +15,7 @@ This is the user-approved commercial product name. Do not rename the app, store 
 - Target SDK: Android 16 / API 36
 - Primary branch: `production-clean-v1`
 
-The application ID is a technical Android identifier and is intentionally preserved even though the customer-facing product name is ReplyDesk: Automated SMS Bot.
+The application ID is a technical Android identifier and is intentionally preserved even though the customer-facing product name is ReplyDesk: Business SMS Bot.
 
 ## Core functions
 
