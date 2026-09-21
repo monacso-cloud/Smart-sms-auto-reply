@@ -5,6 +5,10 @@
       android:orientation="vertical" android:padding="24dp">
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="Auto Reply" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Use this section to choose what ReplyDesk should answer automatically. Turn on Missed Calls, Incoming SMS, or both. You can change these settings anytime."
+        android:textColor="#526278" android:textSize="15sp"/>
     <Switch android:id="@+id/masterReplySwitch" android:layout_width="match_parent" android:layout_height="56dp"
         android:layout_marginTop="20dp" android:text="Master Auto Reply"/>
     <Switch android:id="@+id/missedCallReplySwitch" android:layout_width="match_parent" android:layout_height="56dp"
@@ -13,6 +17,10 @@
         android:text="Reply to incoming SMS"/>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_marginTop="20dp" android:text="Keep ReplyDesk call logs" android:textStyle="bold"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Choose how long ReplyDesk should keep its own call and reply history: 1 week, 2 weeks or 1 month. Old ReplyDesk logs can be deleted automatically to save space."
+        android:textColor="#526278" android:textSize="14sp"/>
     <Spinner android:id="@+id/retentionSpinner" android:layout_width="match_parent" android:layout_height="56dp"/>
     <Switch android:id="@+id/autoDeleteLogsSwitch" android:layout_width="match_parent" android:layout_height="56dp"
         android:text="Automatically delete old logs"/>
