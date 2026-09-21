@@ -69,6 +69,35 @@ When staff assistance is detected:
 - bot must not interrupt
 - manual or timed resume
 
+## Shared staff takeover status
+
+Staff takeover must be synchronized across the main device and all relevant staff/department devices.
+
+When a staff member accepts a handover, ReplyDesk must:
+- change the conversation from STAFF REQUIRED to ASSIGNED / STAFF HANDLING;
+- show the staff member name or staff ID and department;
+- show takeover time;
+- pause the Bot for that conversation;
+- update the main business device;
+- update every device assigned to that department;
+- prevent two staff members from unknowingly handling the same conversation;
+- allow transfer to another staff member or department;
+- show when the conversation is released back to the Bot;
+- keep an audit trail of who accepted, transferred, replied and closed the conversation.
+
+Recommended statuses:
+- BOT HANDLING
+- STAFF REQUIRED
+- OFFERED TO DEPARTMENT
+- ACCEPTED / STAFF HANDLING
+- TRANSFERRED
+- WAITING FOR CUSTOMER
+- RESOLVED
+- BOT RESUMED
+- FAILED / ATTENTION REQUIRED
+
+This is a cloud-synchronized state. Local-only device storage is not sufficient for multi-device companies. The shared status should be backed by the ReplyDesk backend and delivered to connected devices in near real time.
+
 ## Business hours / after hours
 Provide weekly hours, holiday mode, away mode, temporary closure, special hours, after-hours message, booking link, emergency/contact information and staff availability.
 
