@@ -80,6 +80,7 @@ public class SectionActivity extends Activity {
             case "account": buildSimpleInfo("Subscription / Account","Subscription status, billing plan and account controls."); break;
             case "help": buildHelp(); break;
             case "feature_request": buildFeatureRequest(); break;
+            case "department_routing": buildDepartmentRouting(); break;
             case "departments": buildDepartments(); break;
             case "unmatched": buildUnmatched(); break;
             default: buildSimpleInfo(titleFor(key),"This section is ready for expansion.");
@@ -343,6 +344,47 @@ public class SectionActivity extends Activity {
                 +(checkSelfPermission(Manifest.permission.RECEIVE_SMS)==PackageManager.PERMISSION_GRANTED?"✓":"✕")+" Receive SMS";
     }
 
+    private void buildDepartmentRouting() {
+        SharedPreferences p=prefs();
+
+        TextView intro=text("Route customer messages and calls to the right department — even when staff use different phones.",16,true);
+        intro.setPadding(0,0,0,dp(10));
+        content.addView(intro);
+
+        Switch enabled=toggle("Department Routing",p.getBoolean("routing_enabled",false));
+        Spinner mode=spinner("Routing Mode",new String[]{"SMS forwarding only","Call forwarding only","SMS + Call routing"},p.getInt("routing_mode",2));
+
+        EditText department=input("Department Name",p.getString("routing_department","Sales"));
+        EditText numbers=largeEdit("External Numbers — one per line",p.getString("routing_numbers",""));
+        CheckBox smsForward=check("Forward matched SMS to department numbers",p.getBoolean("routing_sms_forward",true));
+        CheckBox staffNotify=check("Notify all department numbers",p.getBoolean("routing_notify_all",true));
+        CheckBox includeCustomer=check("Include customer number and original message",p.getBoolean("routing_include_customer",true));
+        CheckBox pauseBot=check("Pause Bot when department takes over",p.getBoolean("routing_pause_bot",true));
+
+        spinner("Call Routing Strategy",new String[]{"Ring first number","Ring numbers in order","Ring all available staff","Forward only after missed call","Manual handover"},p.getInt("routing_call_strategy",1));
+        EditText fallback=input("Fallback / Overflow Number",p.getString("routing_fallback_number",""));
+
+        button("Add Another Department",v->toast("Additional department routing profile"));
+        buttonPrimary("Save Routing",v->{
+            p.edit()
+                    .putBoolean("routing_enabled",enabled.isChecked())
+                    .putInt("routing_mode",mode.getSelectedItemPosition())
+                    .putString("routing_department",department.getText().toString().trim())
+                    .putString("routing_numbers",numbers.getText().toString().trim())
+                    .putBoolean("routing_sms_forward",smsForward.isChecked())
+                    .putBoolean("routing_notify_all",staffNotify.isChecked())
+                    .putBoolean("routing_include_customer",includeCustomer.isChecked())
+                    .putBoolean("routing_pause_bot",pauseBot.isChecked())
+                    .putString("routing_fallback_number",fallback.getText().toString().trim())
+                    .apply();
+            toast("Department routing settings saved");
+        });
+
+        TextView note=text("SMS forwarding can be handled by ReplyDesk. Reliable live call routing to several external numbers needs a cloud telephony/business-number service or carrier-supported call forwarding; a normal Android handset cannot universally act as a multi-number PBX by itself.",13,false);
+        note.setPadding(0,dp(12),0,0);
+        content.addView(note);
+    }
+
     private void buildHelp() {
         buildSimpleInfo("Help & Support","Help articles, setup guidance, diagnostics and support options.");
         button("Suggest a Feature / Improve ReplyDesk",v->open("feature_request"));
@@ -482,7 +524,7 @@ public class SectionActivity extends Activity {
             case "conversations":return "Conversations"; case "activity":return "Activity & Call Logs"; case "test_bot":return "Test Bot";
             case "templates":return "Message Templates"; case "contacts":return "Contacts / Customers"; case "scheduled":return "Scheduled Messages";
             case "business_profile":return "Business Profile"; case "bot_settings":return "Bot Settings"; case "permissions":return "Permissions & Diagnostics";
-            case "account":return "Subscription / Account"; case "help":return "Help & Support"; case "feature_request":return "Suggest a Feature"; case "departments":return "Departments"; case "unmatched":return "Unmatched Messages"; case "automation_schedule":return "Automation Schedule";
+            case "account":return "Subscription / Account"; case "help":return "Help & Support"; case "feature_request":return "Suggest a Feature"; case "department_routing":return "Department Routing"; case "departments":return "Departments"; case "unmatched":return "Unmatched Messages"; case "automation_schedule":return "Automation Schedule";
         } return "ReplyDesk";
     }
 
