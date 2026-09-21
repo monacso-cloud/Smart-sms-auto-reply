@@ -85,6 +85,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
             String message = prefs.getString("message", context.getString(R.string.default_message));
             message = appendNumberedMenu(message, prefs);
+            message = withAutomationDisclosure(message);
             int subscriptionId = prefs.getInt(
                     "subscription_id", SubscriptionManager.getDefaultSmsSubscriptionId());
 
@@ -109,6 +110,15 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             android.util.Log.e("ReplyDesk", "Missed-call auto reply failed", error);
             AppCallLogStore.add(context, "MISSED", null, "reply failed");
         } 
+    }
+
+    private String withAutomationDisclosure(String message) {
+        if (message == null) return "Automated reply:";
+        String clean = message.trim();
+        if (clean.toLowerCase(java.util.Locale.ROOT).startsWith("automated reply:")) {
+            return clean;
+        }
+        return "Automated reply:\n" + clean;
     }
 
     private String appendNumberedMenu(String message, SharedPreferences prefs) {
