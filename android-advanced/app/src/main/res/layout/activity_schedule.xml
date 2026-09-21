@@ -5,6 +5,10 @@
       android:orientation="vertical" android:padding="24dp">
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="Reply Schedule" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Use this section to choose when ReplyDesk is allowed to send automatic replies. Choose Always, turn the schedule Off, or set your own days and hours — for example 18:00 to 06:00 for after-hours replies."
+        android:textColor="#526278" android:textSize="15sp"/>
     <RadioGroup android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
       <RadioButton android:id="@+id/scheduleAlways" android:layout_width="match_parent" android:layout_height="48dp" android:text="Always reply"/>
       <RadioButton android:id="@+id/scheduleCustom" android:layout_width="match_parent" android:layout_height="48dp" android:text="Reply only during custom hours"/>
