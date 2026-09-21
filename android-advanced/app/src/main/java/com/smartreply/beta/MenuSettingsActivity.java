@@ -19,39 +19,64 @@ public class MenuSettingsActivity extends Activity {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         Switch enabled = findViewById(R.id.menuEnabledSwitch);
         EditText intro = findViewById(R.id.menuIntroInput);
-        EditText item1 = findViewById(R.id.menuItem1Input);
-        EditText reply1 = findViewById(R.id.menuReply1Input);
-        EditText item2 = findViewById(R.id.menuItem2Input);
-        EditText reply2 = findViewById(R.id.menuReply2Input);
-        EditText item3 = findViewById(R.id.menuItem3Input);
-        EditText reply3 = findViewById(R.id.menuReply3Input);
-        EditText item4 = findViewById(R.id.menuItem4Input);
-        EditText reply4 = findViewById(R.id.menuReply4Input);
+
+        int[] labelIds = {
+                R.id.menuItem1Input, R.id.menuItem2Input, R.id.menuItem3Input, R.id.menuItem4Input, R.id.menuItem5Input,
+                R.id.menuItem6Input, R.id.menuItem7Input, R.id.menuItem8Input, R.id.menuItem9Input, R.id.menuItem10Input
+        };
+        int[] replyIds = {
+                R.id.menuReply1Input, R.id.menuReply2Input, R.id.menuReply3Input, R.id.menuReply4Input, R.id.menuReply5Input,
+                R.id.menuReply6Input, R.id.menuReply7Input, R.id.menuReply8Input, R.id.menuReply9Input, R.id.menuReply10Input
+        };
+
+        String[] defaultLabels = {
+                "Service prices",
+                "Availability",
+                "Booking or service information",
+                "Human assistance",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+        };
+        String[] defaultReplies = {
+                "Our service prices start from [PRICE]. More information: [WEBSITE].",
+                "Please check current availability here: [WEBSITE].",
+                "You can find booking or service information here: [WEBSITE].",
+                "Thanks. A team member will help you as soon as possible.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+        };
 
         enabled.setChecked(prefs.getBoolean("menu_enabled", false));
         intro.setText(prefs.getString("menu_intro", "How can we help? Reply with a number:"));
-        item1.setText(prefs.getString("menu_item_1", "Service prices"));
-        reply1.setText(prefs.getString("menu_reply_1", "Our service prices start from [PRICE]. More information: [WEBSITE]."));
-        item2.setText(prefs.getString("menu_item_2", "Availability"));
-        reply2.setText(prefs.getString("menu_reply_2", "Please check current availability here: [WEBSITE]."));
-        item3.setText(prefs.getString("menu_item_3", "Booking or service information"));
-        reply3.setText(prefs.getString("menu_reply_3", "You can find booking or service information here: [WEBSITE]."));
-        item4.setText(prefs.getString("menu_item_4", "Human assistance"));
-        reply4.setText(prefs.getString("menu_reply_4", "Thanks. A team member will help you as soon as possible."));
+
+        EditText[] labels = new EditText[10];
+        EditText[] replies = new EditText[10];
+        for (int i = 0; i < 10; i++) {
+            labels[i] = findViewById(labelIds[i]);
+            replies[i] = findViewById(replyIds[i]);
+            labels[i].setText(prefs.getString("menu_item_" + (i + 1), defaultLabels[i]));
+            replies[i].setText(prefs.getString("menu_reply_" + (i + 1), defaultReplies[i]));
+        }
 
         ((Button) findViewById(R.id.saveMenuButton)).setOnClickListener(v -> {
-            prefs.edit()
+            SharedPreferences.Editor editor = prefs.edit()
                     .putBoolean("menu_enabled", enabled.isChecked())
-                    .putString("menu_intro", intro.getText().toString().trim())
-                    .putString("menu_item_1", item1.getText().toString().trim())
-                    .putString("menu_reply_1", reply1.getText().toString().trim())
-                    .putString("menu_item_2", item2.getText().toString().trim())
-                    .putString("menu_reply_2", reply2.getText().toString().trim())
-                    .putString("menu_item_3", item3.getText().toString().trim())
-                    .putString("menu_reply_3", reply3.getText().toString().trim())
-                    .putString("menu_item_4", item4.getText().toString().trim())
-                    .putString("menu_reply_4", reply4.getText().toString().trim())
-                    .apply();
+                    .putString("menu_intro", intro.getText().toString().trim());
+
+            for (int i = 0; i < 10; i++) {
+                editor.putString("menu_item_" + (i + 1), labels[i].getText().toString().trim());
+                editor.putString("menu_reply_" + (i + 1), replies[i].getText().toString().trim());
+            }
+
+            editor.apply();
             Toast.makeText(this, "Menu settings saved", Toast.LENGTH_SHORT).show();
         });
     }
