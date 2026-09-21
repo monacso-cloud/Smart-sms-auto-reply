@@ -29,6 +29,10 @@ public class MissedCallReplyWorker extends Worker {
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (!prefs.getBoolean("enabled", false)) return Result.success();
+        if (!AutomationSchedulePolicy.allowMissedCall(prefs, System.currentTimeMillis())) {
+            prefs.edit().putString("last_chat_status", "Missed-call auto reply skipped by schedule/channel settings").apply();
+            return Result.success();
+        }
 
         int delaySeconds = Math.max(0, Math.min(60, prefs.getInt("delay_seconds", 30)));
         if (delaySeconds > 0) {
