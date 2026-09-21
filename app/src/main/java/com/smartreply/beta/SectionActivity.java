@@ -74,6 +74,7 @@ public class SectionActivity extends Activity {
             case "contacts": buildSimpleInfo("Contacts / Customers","Customer records and searchable conversation contacts will live here."); break;
             case "scheduled": buildSimpleInfo("Scheduled Messages","Scheduled business messages and future-send controls will live here."); break;
             case "business_profile": buildBusinessProfile(); break;
+            case "automation_schedule": buildAutomationSchedule(); break;
             case "bot_settings": buildBotSettings(); break;
             case "permissions": buildPermissions(); break;
             case "account": buildSimpleInfo("Subscription / Account","Subscription status, billing plan and account controls."); break;
@@ -238,8 +239,40 @@ public class SectionActivity extends Activity {
         buttonPrimary("+ ADD CUSTOM TEMPLATE",v->toast("Custom template editor"));
     }
 
+    private void buildAutomationSchedule() {
+        SharedPreferences p=prefs();
+        Switch master=toggle("Use Auto Reply Schedule",p.getBoolean("schedule_enabled",false));
+        Spinner mode=spinner("Auto Reply Mode",new String[]{"Always on","Only during selected hours","Only outside selected hours","Manual only"},p.getInt("schedule_mode",0));
+        EditText start=input("Start time",p.getString("schedule_start","8:00 AM"));
+        EditText end=input("End time",p.getString("schedule_end","8:00 PM"));
+        CheckBox missed=check("Auto reply to missed calls",p.getBoolean("schedule_missed_calls",true));
+        CheckBox incoming=check("Auto reply to incoming SMS",p.getBoolean("schedule_incoming_sms",true));
+        CheckBox unmatched=check("Reply to unmatched incoming messages",p.getBoolean("schedule_unmatched_sms",true));
+        CheckBox after=check("Use different after-hours reply",p.getBoolean("schedule_after_hours",true));
+        button("Business Hours",v->open("business_hours"));
+        button("After-Hours Reply",v->open("after_hours"));
+        buttonPrimary("Save",v->{
+            p.edit().putBoolean("schedule_enabled",master.isChecked())
+                    .putInt("schedule_mode",mode.getSelectedItemPosition())
+                    .putString("schedule_start",start.getText().toString().trim())
+                    .putString("schedule_end",end.getText().toString().trim())
+                    .putBoolean("schedule_missed_calls",missed.isChecked())
+                    .putBoolean("schedule_incoming_sms",incoming.isChecked())
+                    .putBoolean("schedule_unmatched_sms",unmatched.isChecked())
+                    .putBoolean("schedule_after_hours",after.isChecked()).apply();
+            toast("Automation schedule saved");
+        });
+    }
+
     private void buildBusinessProfile() {
         SharedPreferences p=prefs();
+        TextView logoStatus=text(p.getString("business_logo_uri","").isEmpty()?"No business logo selected":"Business logo selected ✓",15,true);
+        logoStatus.setPadding(dp(14),dp(12),dp(14),dp(12)); logoStatus.setBackgroundColor(Color.WHITE); content.addView(logoStatus);
+        button("Choose / Change Business Logo",v->{
+            Intent pick=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            pick.setType("image/*"); pick.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(pick,2002);
+        });
         EditText name=input("Business Name",p.getString("business_name",""));
         EditText type=input("Business Type",p.getString("business_type",""));
         EditText phone=input("Phone",p.getString("business_phone",""));
@@ -262,6 +295,7 @@ public class SectionActivity extends Activity {
         spinner("Do not reply again within",new String[]{"1 minute","5 minutes","10 minutes","30 minutes","Custom"},2);
         check("Stop Bot when staff takes over",true);
         check("Ignore OTP / verification messages",true);
+        button("Automation Schedule",v->open("automation_schedule"));
         button("Blocked numbers",v->toast("Blocked-number list"));
         check("STOP keyword handling",true);
         spinner("Reply delay",new String[]{"No delay","15 seconds","30 seconds","1 minute","Custom"},2);
@@ -375,8 +409,20 @@ public class SectionActivity extends Activity {
             case "conversations":return "Conversations"; case "activity":return "Activity & Call Logs"; case "test_bot":return "Test Bot";
             case "templates":return "Message Templates"; case "contacts":return "Contacts / Customers"; case "scheduled":return "Scheduled Messages";
             case "business_profile":return "Business Profile"; case "bot_settings":return "Bot Settings"; case "permissions":return "Permissions & Diagnostics";
-            case "account":return "Subscription / Account"; case "help":return "Help & Support"; case "departments":return "Departments"; case "unmatched":return "Unmatched Messages";
+            case "account":return "Subscription / Account"; case "help":return "Help & Support"; case "departments":return "Departments"; case "unmatched":return "Unmatched Messages"; case "automation_schedule":return "Automation Schedule";
         } return "ReplyDesk";
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode,int resultCode,Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if(requestCode==2002 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
+            Uri uri=data.getData();
+            try{getContentResolver().takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION);}catch(Exception ignored){}
+            prefs().edit().putString("business_logo_uri",uri.toString()).apply();
+            toast("Business logo saved");
+            render();
+        }
     }
 
     private SharedPreferences prefs(){return getSharedPreferences(PREFS,MODE_PRIVATE);}
