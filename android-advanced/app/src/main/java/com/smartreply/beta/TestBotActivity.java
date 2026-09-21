@@ -23,6 +23,17 @@ public class TestBotActivity extends Activity {
         ((Button) findViewById(R.id.runTestButton)).setOnClickListener(v -> {
             SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
             String incoming = input.getText().toString().trim().toLowerCase(Locale.ROOT);
+            String menuReply = null;
+            if (prefs.getBoolean("menu_enabled", false) && incoming.matches("[1-4]")) {
+                String candidate = prefs.getString("menu_reply_" + incoming, "").trim();
+                if (!candidate.isEmpty()) menuReply = candidate;
+            }
+
+            if (menuReply != null) {
+                result.setText("Matched menu option: " + incoming + "\n\nReply:\n" + menuReply);
+                return;
+            }
+
             Match match = findReply(incoming, prefs.getString("chatbot_rules", ""));
             if (match == null) {
                 result.setText("No keyword matched.\n\nFallback reply:\n" +
