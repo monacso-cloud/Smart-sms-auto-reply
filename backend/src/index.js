@@ -1,6 +1,7 @@
 import express from "express";
 import { checkDatabase } from "./db.js";
 import { api } from "./api.js";
+import { internalEvents } from "./internalEvents.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -17,6 +18,7 @@ app.get("/health", async (_req, res) => {
 });
 
 app.use("/api/v1", api);
+app.use("/internal/events", internalEvents);
 
 app.get("/api/v1/platform-info", (_req, res) => {
   res.json({
