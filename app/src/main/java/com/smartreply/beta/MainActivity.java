@@ -94,7 +94,8 @@ public class MainActivity extends Activity {
                 {"Bot Settings","bot_settings"},
                 {"Permissions & Diagnostics","permissions"},
                 {"Subscription / Account","account"},
-                {"Help & Support","help"}
+                {"Help & Support","help"},
+                {"Suggest a Feature / Contact Us","feature_request"}
         };
 
         for (String[] card : cards) {
