@@ -1,4 +1,4 @@
-name: Build ReplyDesk Automated SMS Bot Production Candidate
+name: Build ReplyDesk Business SMS Bot Production Candidate
 
 on:
   workflow_dispatch:
@@ -47,15 +47,15 @@ jobs:
       - name: Prepare ReplyDesk production artifacts
         run: |
           test -f app/build/outputs/bundle/release/app-release.aab
-          cp app/build/outputs/apk/release/app-release-unsigned.apk "ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.apk"
-          cp app/build/outputs/bundle/release/app-release.aab "ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.aab"
+          cp app/build/outputs/apk/release/app-release-unsigned.apk "ReplyDesk-Business-SMS-Bot-v1.0.0-RC2-Unsigned.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "ReplyDesk-Business-SMS-Bot-v1.0.0-RC2-Unsigned.aab"
 
       - name: Upload ReplyDesk production candidates
         uses: actions/upload-artifact@v4
         with:
-          name: ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Production-Candidates
+          name: ReplyDesk-Business-SMS-Bot-v1.0.0-RC2-Production-Candidates
           path: |
-            ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.apk
-            ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.aab
+            ReplyDesk-Business-SMS-Bot-v1.0.0-RC2-Unsigned.apk
+            ReplyDesk-Business-SMS-Bot-v1.0.0-RC2-Unsigned.aab
           if-no-files-found: error
           retention-days: 30
