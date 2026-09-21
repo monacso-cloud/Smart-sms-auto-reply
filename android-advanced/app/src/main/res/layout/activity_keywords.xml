@@ -4,7 +4,7 @@
   <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
       android:orientation="vertical" android:padding="24dp">
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Keywords & Replies" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
+        android:text="Keywords &amp; Replies" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Create your own keywords. Put similar customer words before =&gt; and your reply after it. Example: price,cost,how much =&gt; Our prices are..."
