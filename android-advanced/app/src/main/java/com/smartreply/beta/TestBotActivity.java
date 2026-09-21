@@ -24,7 +24,7 @@ public class TestBotActivity extends Activity {
             SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
             String incoming = input.getText().toString().trim().toLowerCase(Locale.ROOT);
             String menuReply = null;
-            if (prefs.getBoolean("menu_enabled", false) && incoming.matches("[1-4]")) {
+            if (prefs.getBoolean("menu_enabled", false) && incoming.matches("(10|[1-9])")) {
                 String candidate = prefs.getString("menu_reply_" + incoming, "").trim();
                 if (!candidate.isEmpty()) menuReply = candidate;
             }
