@@ -21,6 +21,10 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         if (context.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return;
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (!prefs.getBoolean("chatbot_enabled", false)) return;
+        if (!AutomationSchedulePolicy.allowIncomingSms(prefs, System.currentTimeMillis())) {
+            prefs.edit().putString("last_chat_status", "Incoming SMS auto reply skipped by schedule/channel settings").apply();
+            return;
+        }
         try {
             receive(context, intent, prefs);
         } catch (RuntimeException error) {
@@ -66,7 +70,13 @@ public class SmsReplyReceiver extends BroadcastReceiver {
             reply = ChatbotRules.findReply(normalized,
                     prefs.getString("chatbot_rules", context.getString(R.string.default_chatbot_rules)));
             matched = reply != null;
-            if (!matched) reply = prefs.getString("chatbot_fallback", context.getString(R.string.default_chatbot_fallback));
+            if (!matched) {
+                if (!AutomationSchedulePolicy.allowUnmatchedSms(prefs)) {
+                    prefs.edit().putString("last_chat_status", "Unmatched SMS received; automatic fallback is disabled").apply();
+                    return;
+                }
+                reply = prefs.getString("chatbot_fallback", context.getString(R.string.default_chatbot_fallback));
+            }
         }
         if (reply == null || reply.trim().isEmpty()) return;
         if (reply.toLowerCase(java.util.Locale.ROOT).contains("[enter ")) {
