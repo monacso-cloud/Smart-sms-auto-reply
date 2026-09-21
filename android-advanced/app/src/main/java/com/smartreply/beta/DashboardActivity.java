@@ -18,6 +18,8 @@ public class DashboardActivity extends Activity {
         bind(R.id.openScheduleButton, ScheduleActivity.class);
         bind(R.id.openCallLogsButton, CallLogsActivity.class);
         bind(R.id.openTestBotButton, TestBotActivity.class);
+        bind(R.id.openAccountButton, AccountActivity.class);
+        bind(R.id.openLegalButton, LegalSupportActivity.class);
     }
 
     private void bind(int id, Class<?> target) {
