@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Smart SMS Reply"
+            android:text="ReplyDesk — Business SMS"
             android:textColor="#0B1F3A"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Missed-call auto reply + SMS chatbot — Advanced v0.5.3 test"
+            android:text="User-configured business SMS tools for missed calls and incoming messages"
             android:textColor="#526278"
             android:textSize="16sp" />
 
@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="8dp"
-            android:text="Grant or check permissions"
+            android:text="Review &amp; grant permissions"
             android:textAllCaps="false" />
 
         <Switch
