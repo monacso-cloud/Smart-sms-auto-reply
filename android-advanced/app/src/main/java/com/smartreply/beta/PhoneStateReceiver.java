@@ -46,7 +46,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         }
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (!prefs.getBoolean("enabled", false)) return;
+        if (!ReplyPolicy.shouldReply(context, "missed_call")) return;
 
         String[] projection = {
                 CallLog.Calls.NUMBER,
@@ -69,6 +69,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             long lastProcessed = prefs.getLong("last_processed_call", 0L);
 
             if (callType != CallLog.Calls.MISSED_TYPE || callDate <= lastProcessed) return;
+            AppCallLogStore.add(context, "MISSED", number, "detected");
             prefs.edit().putLong("last_processed_call", callDate).apply();
 
             if (number == null || number.trim().isEmpty() || number.equals("-1")) return;
@@ -102,8 +103,10 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                     .putLong("last_sent_at", now)
                     .putString("last_sent_number", number)
                     .apply();
-        } catch (Exception ignored) {
-            // A later version will expose detailed error logs in the dashboard.
+            AppCallLogStore.add(context, "MISSED", number, "auto reply sent");
+        } catch (Exception error) {
+            android.util.Log.e("ReplyDesk", "Missed-call auto reply failed", error);
+            AppCallLogStore.add(context, "MISSED", null, "reply failed");
         }
     }
 }
