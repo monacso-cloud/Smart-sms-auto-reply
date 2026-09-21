@@ -1,5 +1,6 @@
 import express from "express";
 import { checkDatabase } from "./db.js";
+import { api } from "./api.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -15,7 +16,9 @@ app.get("/health", async (_req, res) => {
   });
 });
 
-app.get("/api/v1/platform", (_req, res) => {
+app.use("/api/v1", api);
+
+app.get("/api/v1/platform-info", (_req, res) => {
   res.json({
     product: "ReplyDesk",
     capabilities: {
