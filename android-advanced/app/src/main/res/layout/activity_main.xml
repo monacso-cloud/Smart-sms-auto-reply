@@ -39,6 +39,14 @@
             android:textStyle="bold" />
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Use this section to edit the actual message ReplyDesk sends after a missed call. Replace placeholders with your own business information."
+            android:textColor="#526278"
+            android:textSize="14sp" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
@@ -65,6 +73,14 @@
             android:textSize="16sp" />
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Choose how long ReplyDesk waits before sending the automatic reply. A short delay can make the response feel more natural."
+            android:textColor="#526278"
+            android:textSize="14sp" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -81,6 +97,14 @@
             android:background="#FFFFFF" />
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Choose how often the same caller can receive another missed-call reply. This helps prevent repeated messages."
+            android:textColor="#526278"
+            android:textSize="14sp" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -95,6 +119,14 @@
             android:layout_height="56dp"
             android:layout_marginTop="6dp"
             android:background="#FFFFFF" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="If your phone has more than one SIM, choose which SIM ReplyDesk should use to send SMS."
+            android:textColor="#526278"
+            android:textSize="14sp" />
 
         <TextView
             android:layout_width="wrap_content"
