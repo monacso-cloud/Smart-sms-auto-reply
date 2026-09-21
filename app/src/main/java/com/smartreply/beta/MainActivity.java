@@ -81,6 +81,7 @@ public class MainActivity extends Activity {
                 {"SMS Auto Bot","sms_bot"},
                 {"Auto Reply Library","library"},
                 {"Staff Assistance","staff"},
+                {"Department Routing / Forwarding","department_routing"},
                 {"Business Hours","business_hours"},
                 {"After-Hours Reply","after_hours"},
                 {"Conversations","conversations"},
