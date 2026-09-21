@@ -78,7 +78,8 @@ public class SectionActivity extends Activity {
             case "bot_settings": buildBotSettings(); break;
             case "permissions": buildPermissions(); break;
             case "account": buildSimpleInfo("Subscription / Account","Subscription status, billing plan and account controls."); break;
-            case "help": buildSimpleInfo("Help & Support","Help articles, setup guidance, diagnostics and support contact options."); break;
+            case "help": buildHelp(); break;
+            case "feature_request": buildFeatureRequest(); break;
             case "departments": buildDepartments(); break;
             case "unmatched": buildUnmatched(); break;
             default: buildSimpleInfo(titleFor(key),"This section is ready for expansion.");
@@ -342,6 +343,78 @@ public class SectionActivity extends Activity {
                 +(checkSelfPermission(Manifest.permission.RECEIVE_SMS)==PackageManager.PERMISSION_GRANTED?"✓":"✕")+" Receive SMS";
     }
 
+    private void buildHelp() {
+        buildSimpleInfo("Help & Support","Help articles, setup guidance, diagnostics and support options.");
+        button("Suggest a Feature / Improve ReplyDesk",v->open("feature_request"));
+    }
+
+    private void buildFeatureRequest() {
+        SharedPreferences p=prefs();
+
+        TextView intro=text("Tell us what would make ReplyDesk work better for your business.",16,true);
+        intro.setPadding(0,0,0,dp(8));
+        content.addView(intro);
+
+        TextView body=text("Different businesses work in different ways. Tell us what is difficult, what function you need, and how you would like it to work. Your request can help shape future ReplyDesk features.",14,false);
+        body.setPadding(0,0,0,dp(14));
+        content.addView(body);
+
+        EditText businessName=input("Business Name",p.getString("business_name",""));
+        EditText businessType=input("Business Type",p.getString("business_type",""));
+        EditText problem=largeEdit("What is difficult or time-consuming in your business?",p.getString("feature_problem",""));
+        EditText feature=largeEdit("What feature would make your business easier?",p.getString("feature_request",""));
+        EditText workflow=largeEdit("How would you like it to work?",p.getString("feature_workflow",""));
+        Spinner importance=spinner("How important is this feature?",new String[]{"Nice to have","Useful","Important","Very important","Critical for our workflow"},p.getInt("feature_importance",2));
+        CheckBox contact=check("You may contact me about this request",p.getBoolean("feature_contact_ok",true));
+        EditText email=input("Contact Email",p.getString("business_email",""));
+        EditText phone=input("Contact Phone",p.getString("business_phone",""));
+
+        button("Save Draft",v->{
+            saveFeatureDraft(p,businessName,businessType,problem,feature,workflow,importance,contact,email,phone);
+            toast("Feature request draft saved");
+        });
+
+        buttonPrimary("SEND FEATURE REQUEST",v->{
+            saveFeatureDraft(p,businessName,businessType,problem,feature,workflow,importance,contact,email,phone);
+            String message="ReplyDesk Feature Request\n\n"
+                    +"Business: "+businessName.getText().toString().trim()+"\n"
+                    +"Business type: "+businessType.getText().toString().trim()+"\n"
+                    +"Importance: "+String.valueOf(importance.getSelectedItem())+"\n\n"
+                    +"What is difficult now?\n"+problem.getText().toString().trim()+"\n\n"
+                    +"Requested feature\n"+feature.getText().toString().trim()+"\n\n"
+                    +"How it should work\n"+workflow.getText().toString().trim()+"\n\n"
+                    +"Contact permission: "+(contact.isChecked()?"Yes":"No")+"\n"
+                    +"Email: "+email.getText().toString().trim()+"\n"
+                    +"Phone: "+phone.getText().toString().trim();
+
+            Intent share=new Intent(Intent.ACTION_SEND);
+            share.setType("text/plain");
+            share.putExtra(Intent.EXTRA_SUBJECT,"ReplyDesk Feature Request");
+            share.putExtra(Intent.EXTRA_TEXT,message);
+            startActivity(Intent.createChooser(share,"Send feature request"));
+        });
+
+        TextView note=text("Before public release, this page can be connected directly to ReplyDesk support so requests arrive without the customer needing to copy technical information.",13,false);
+        note.setPadding(0,dp(12),0,0);
+        content.addView(note);
+    }
+
+    private void saveFeatureDraft(SharedPreferences p, EditText businessName, EditText businessType,
+                                  EditText problem, EditText feature, EditText workflow, Spinner importance,
+                                  CheckBox contact, EditText email, EditText phone) {
+        p.edit()
+                .putString("feature_business_name",businessName.getText().toString().trim())
+                .putString("feature_business_type",businessType.getText().toString().trim())
+                .putString("feature_problem",problem.getText().toString().trim())
+                .putString("feature_request",feature.getText().toString().trim())
+                .putString("feature_workflow",workflow.getText().toString().trim())
+                .putInt("feature_importance",importance.getSelectedItemPosition())
+                .putBoolean("feature_contact_ok",contact.isChecked())
+                .putString("feature_contact_email",email.getText().toString().trim())
+                .putString("feature_contact_phone",phone.getText().toString().trim())
+                .apply();
+    }
+
     private void buildSimpleInfo(String heading,String body) {
         TextView t=text(body,16,false); t.setPadding(dp(14),dp(14),dp(14),dp(14)); t.setBackgroundColor(Color.WHITE); content.addView(t);
     }
@@ -409,7 +482,7 @@ public class SectionActivity extends Activity {
             case "conversations":return "Conversations"; case "activity":return "Activity & Call Logs"; case "test_bot":return "Test Bot";
             case "templates":return "Message Templates"; case "contacts":return "Contacts / Customers"; case "scheduled":return "Scheduled Messages";
             case "business_profile":return "Business Profile"; case "bot_settings":return "Bot Settings"; case "permissions":return "Permissions & Diagnostics";
-            case "account":return "Subscription / Account"; case "help":return "Help & Support"; case "departments":return "Departments"; case "unmatched":return "Unmatched Messages"; case "automation_schedule":return "Automation Schedule";
+            case "account":return "Subscription / Account"; case "help":return "Help & Support"; case "feature_request":return "Suggest a Feature"; case "departments":return "Departments"; case "unmatched":return "Unmatched Messages"; case "automation_schedule":return "Automation Schedule";
         } return "ReplyDesk";
     }
 
