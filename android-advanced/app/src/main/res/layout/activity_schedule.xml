@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F4F7FB">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+      android:orientation="vertical" android:padding="24dp">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Reply Schedule" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
+    <RadioGroup android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
+      <RadioButton android:id="@+id/scheduleAlways" android:layout_width="match_parent" android:layout_height="48dp" android:text="Always reply"/>
+      <RadioButton android:id="@+id/scheduleCustom" android:layout_width="match_parent" android:layout_height="48dp" android:text="Reply only during custom hours"/>
+      <RadioButton android:id="@+id/scheduleOff" android:layout_width="match_parent" android:layout_height="48dp" android:text="Schedule off"/>
+    </RadioGroup>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Start time" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <TextView android:id="@+id/startTimeText" android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:textSize="18sp" android:background="#FFFFFF" android:padding="12dp"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="End time" android:textStyle="bold" android:layout_marginTop="12dp"/>
+    <TextView android:id="@+id/endTimeText" android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:textSize="18sp" android:background="#FFFFFF" android:padding="12dp"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Days" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <CheckBox android:id="@+id/daySunday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Sunday"/>
+    <CheckBox android:id="@+id/dayMonday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Monday"/>
+    <CheckBox android:id="@+id/dayTuesday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Tuesday"/>
+    <CheckBox android:id="@+id/dayWednesday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Wednesday"/>
+    <CheckBox android:id="@+id/dayThursday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Thursday"/>
+    <CheckBox android:id="@+id/dayFriday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Friday"/>
+    <CheckBox android:id="@+id/daySaturday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Saturday"/>
+    <Button android:id="@+id/saveScheduleButton" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="20dp" android:text="Save Schedule"/>
+  </LinearLayout>
+</ScrollView>
