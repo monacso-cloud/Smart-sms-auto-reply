@@ -1,0 +1,30 @@
+name: Inspect ReplyDesk Advanced source
+
+on:
+  push:
+    branches:
+      - feature/replydesk-platform-foundation
+    paths:
+      - ".github/workflows/inspect-advanced.yml"
+      - "Smart-SMS-Reply-Advanced-Source.zip"
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Advanced source contents
+        run: |
+          unzip -l Smart-SMS-Reply-Advanced-Source.zip
+      - name: Extract and summarize key Android files
+        run: |
+          rm -rf /tmp/replydesk-advanced
+          mkdir -p /tmp/replydesk-advanced
+          unzip -q Smart-SMS-Reply-Advanced-Source.zip -d /tmp/replydesk-advanced
+          echo "=== JAVA / KOTLIN FILES ==="
+          find /tmp/replydesk-advanced -type f \( -name '*.java' -o -name '*.kt' \) -print | sort
+          echo "=== LAYOUT FILES ==="
+          find /tmp/replydesk-advanced -type f -name '*.xml' -print | sort
+          echo "=== SETTINGS / KEYWORDS / SCHEDULE REFERENCES ==="
+          grep -RniE 'keyword|schedule|business hour|auto.?reply|missed.?call|sms|call.?log|reply mode|human|handover' /tmp/replydesk-advanced --include='*.java' --include='*.kt' --include='*.xml' || true
