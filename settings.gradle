@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ReplyDeskAutomatedSmsBot"
+rootProject.name = "ReplyDeskBusinessSmsBot"
 include ':app'
