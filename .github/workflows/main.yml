@@ -26,32 +26,36 @@ jobs:
 
       - name: Install Android SDK packages
         run: |
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-36" "build-tools;36.0.0"
 
       - name: Set up Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Run tests and build unsigned release APK
+      - name: Run tests and build release APK and AAB
         run: |
-          gradle clean testDebugUnitTest assembleRelease --stacktrace
+          gradle clean testDebugUnitTest assembleRelease bundleRelease --stacktrace
 
-      - name: Verify production package name
+      - name: Verify production APK package name
         run: |
           APK="app/build/outputs/apk/release/app-release-unsigned.apk"
           test -f "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > package.txt
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > package.txt
           grep -q "package: name='com.smartsmsreply.app'" package.txt
 
-      - name: Name unsigned release APK
+      - name: Prepare production artifacts
         run: |
-          cp app/build/outputs/apk/release/app-release-unsigned.apk Smart-SMS-Reply-v1.0.0-RC1-Unsigned.apk
+          test -f app/build/outputs/bundle/release/app-release.aab
+          cp app/build/outputs/apk/release/app-release-unsigned.apk Smart-SMS-Reply-v1.0.0-RC2-Unsigned.apk
+          cp app/build/outputs/bundle/release/app-release.aab Smart-SMS-Reply-v1.0.0-RC2-Unsigned.aab
 
-      - name: Upload unsigned release APK
+      - name: Upload production candidates
         uses: actions/upload-artifact@v4
         with:
-          name: Smart-SMS-Reply-v1.0.0-RC1-Unsigned
-          path: Smart-SMS-Reply-v1.0.0-RC1-Unsigned.apk
+          name: Smart-SMS-Reply-v1.0.0-RC2-Production-Candidates
+          path: |
+            Smart-SMS-Reply-v1.0.0-RC2-Unsigned.apk
+            Smart-SMS-Reply-v1.0.0-RC2-Unsigned.aab
           if-no-files-found: error
           retention-days: 30
