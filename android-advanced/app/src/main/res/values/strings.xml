@@ -18,4 +18,14 @@
         <item>Once every 12 hours</item>
         <item>Once every 24 hours</item>
     </string-array>
+    <string-array name="retention_labels">
+        <item>1 week</item>
+        <item>2 weeks</item>
+        <item>1 month</item>
+    </string-array>
+    <string-array name="call_log_period_labels">
+        <item>Past week</item>
+        <item>Past 2 weeks</item>
+        <item>This month</item>
+    </string-array>
 </resources>
