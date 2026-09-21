@@ -1,4 +1,4 @@
-name: Build Smart SMS Reply Production Candidate
+name: Build ReplyDesk Automated SMS Bot Production Candidate
 
 on:
   workflow_dispatch:
@@ -44,18 +44,18 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > package.txt
           grep -q "package: name='com.smartsmsreply.app'" package.txt
 
-      - name: Prepare production artifacts
+      - name: Prepare ReplyDesk production artifacts
         run: |
           test -f app/build/outputs/bundle/release/app-release.aab
-          cp app/build/outputs/apk/release/app-release-unsigned.apk Smart-SMS-Reply-v1.0.0-RC2-Unsigned.apk
-          cp app/build/outputs/bundle/release/app-release.aab Smart-SMS-Reply-v1.0.0-RC2-Unsigned.aab
+          cp app/build/outputs/apk/release/app-release-unsigned.apk "ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.aab"
 
-      - name: Upload production candidates
+      - name: Upload ReplyDesk production candidates
         uses: actions/upload-artifact@v4
         with:
-          name: Smart-SMS-Reply-v1.0.0-RC2-Production-Candidates
+          name: ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Production-Candidates
           path: |
-            Smart-SMS-Reply-v1.0.0-RC2-Unsigned.apk
-            Smart-SMS-Reply-v1.0.0-RC2-Unsigned.aab
+            ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.apk
+            ReplyDesk-Automated-SMS-Bot-v1.0.0-RC2-Unsigned.aab
           if-no-files-found: error
           retention-days: 30
