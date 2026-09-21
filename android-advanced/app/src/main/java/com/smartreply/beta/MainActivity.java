@@ -148,11 +148,14 @@ public class MainActivity extends Activity {
 
         getSharedPreferences(PREFS, MODE_PRIVATE).edit()
                 .putBoolean("enabled", enabledSwitch.isChecked())
+                .putBoolean("master_enabled", enabledSwitch.isChecked())
+                .putBoolean("reply_to_missed_calls", enabledSwitch.isChecked())
                 .putString("message", message)
                 .putInt("delay_seconds", delay)
                 .putInt("repeat_minutes", repeatMinutes)
                 .putInt("subscription_id", subscriptionId)
                 .putBoolean("chatbot_enabled", chatbotSwitch.isChecked())
+                .putBoolean("reply_to_incoming_sms", chatbotSwitch.isChecked())
                 .putString("chatbot_rules", chatbotRulesInput.getText().toString().trim())
                 .putString("chatbot_fallback", fallbackInput.getText().toString().trim())
                 .apply();
