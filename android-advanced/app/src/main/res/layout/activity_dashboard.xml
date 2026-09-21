@@ -12,7 +12,7 @@
     <Button android:id="@+id/openAutoReplyButton" android:layout_width="match_parent" android:layout_height="56dp"
         android:layout_marginTop="24dp" android:text="Auto Reply"/>
     <Button android:id="@+id/openKeywordsButton" android:layout_width="match_parent" android:layout_height="56dp"
-        android:layout_marginTop="12dp" android:text="Keywords & Replies"/>
+        android:layout_marginTop="12dp" android:text="Keywords &amp; Replies"/>
     <Button android:id="@+id/openScheduleButton" android:layout_width="match_parent" android:layout_height="56dp"
         android:layout_marginTop="12dp" android:text="Reply Schedule"/>
     <Button android:id="@+id/openCallLogsButton" android:layout_width="match_parent" android:layout_height="56dp"
