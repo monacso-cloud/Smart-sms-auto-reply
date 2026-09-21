@@ -96,6 +96,7 @@ public class SmsReplyReceiver extends BroadcastReceiver {
     }
 
     private void send(Context context, SharedPreferences prefs, String number, String message) {
+        message = withAutomationDisclosure(message);
         int subscriptionId = prefs.getInt(
                 "subscription_id", SubscriptionManager.getDefaultSmsSubscriptionId());
         SmsManager manager = subscriptionId == SubscriptionManager.INVALID_SUBSCRIPTION_ID
@@ -104,5 +105,14 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         ArrayList<String> parts = manager.divideMessage(message);
         if (parts.size() > 1) manager.sendMultipartTextMessage(number, null, parts, null, null);
         else manager.sendTextMessage(number, null, message, null, null);
+    }
+
+    private String withAutomationDisclosure(String message) {
+        if (message == null) return "Automated reply:";
+        String clean = message.trim();
+        if (clean.toLowerCase(java.util.Locale.ROOT).startsWith("automated reply:")) {
+            return clean;
+        }
+        return "Automated reply:\n" + clean;
     }
 }
