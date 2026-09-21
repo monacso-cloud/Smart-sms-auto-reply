@@ -23,7 +23,7 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         if (context.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return;
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (!prefs.getBoolean("chatbot_enabled", false)) return;
+        if (!ReplyPolicy.shouldReply(context, "sms")) return;
 
         Bundle bundle = intent.getExtras();
         if (bundle == null) return;
