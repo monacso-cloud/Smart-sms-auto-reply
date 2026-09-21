@@ -102,7 +102,8 @@ public class MainActivity extends Activity {
                         .putBoolean("chatbot_enabled", isChecked)
                         .apply());
 
-        requestRequiredPermissions();
+        // Do not request restricted SMS/Call Log permissions on launch.
+        // The device owner must first choose to configure ReplyDesk and see the disclosure.
         loadSimCards();
         updateStatus();
         updatePermissionStatus();
@@ -156,8 +157,17 @@ public class MainActivity extends Activity {
                     Uri.parse("package:" + getPackageName()));
             startActivity(intent);
         } else {
-            requestRequiredPermissions();
+            showRestrictedPermissionDisclosure();
         }
+    }
+
+    private void showRestrictedPermissionDisclosure() {
+        new AlertDialog.Builder(this)
+                .setTitle("Business SMS automation permissions")
+                .setMessage("ReplyDesk is a user-configured business SMS tool. You decide whether automation is enabled, the message content, response rules, timing and SIM.\n\nTo run the rules you choose on this device, ReplyDesk needs Phone and Call log access to detect missed-call triggers, Send SMS access to send your configured response, and Receive SMS access to detect incoming-message triggers.\n\nReplyDesk does not choose your message content or enable automation for you. You can turn automation off at any time.")
+                .setNegativeButton("Not now", null)
+                .setPositiveButton("Continue", (dialog, which) -> requestRequiredPermissions())
+                .show();
     }
 
     private boolean hasAllPermissions() {
@@ -256,7 +266,7 @@ public class MainActivity extends Activity {
         if (!hasAllPermissions()) {
             updatePermissionStatus();
             Toast.makeText(this, "Allow all four permissions before testing", Toast.LENGTH_LONG).show();
-            requestRequiredPermissions();
+            showRestrictedPermissionDisclosure();
             return;
         }
         String number = testNumberInput.getText().toString().trim();
