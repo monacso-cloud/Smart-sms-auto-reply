@@ -84,6 +84,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             if (delaySeconds > 0) Thread.sleep(delaySeconds * 1000L);
 
             String message = prefs.getString("message", context.getString(R.string.default_message));
+            message = appendNumberedMenu(message, prefs);
             int subscriptionId = prefs.getInt(
                     "subscription_id", SubscriptionManager.getDefaultSmsSubscriptionId());
 
@@ -107,6 +108,25 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         } catch (Exception error) {
             android.util.Log.e("ReplyDesk", "Missed-call auto reply failed", error);
             AppCallLogStore.add(context, "MISSED", null, "reply failed");
+        } 
+    }
+
+    private String appendNumberedMenu(String message, SharedPreferences prefs) {
+        if (!prefs.getBoolean("menu_enabled", false)) return message;
+
+        String intro = prefs.getString("menu_intro", "How can we help? Reply with a number:").trim();
+        StringBuilder menu = new StringBuilder();
+        if (!intro.isEmpty()) menu.append(intro);
+
+        for (int i = 1; i <= 4; i++) {
+            String label = prefs.getString("menu_item_" + i, "").trim();
+            if (!label.isEmpty()) {
+                if (menu.length() > 0) menu.append("\n");
+                menu.append(i).append(" — ").append(label);
+            }
         }
+
+        if (menu.length() == 0) return message;
+        return message.trim() + "\n\n" + menu;
     }
 }
