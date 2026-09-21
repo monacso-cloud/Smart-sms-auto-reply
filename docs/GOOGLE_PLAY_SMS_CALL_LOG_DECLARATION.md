@@ -1,7 +1,7 @@
-# Google Play restricted-permission declaration — ReplyDesk: Automated SMS Bot
+# Google Play restricted-permission declaration — ReplyDesk: Business SMS Bot
 
 ## Core functionality
-ReplyDesk: Automated SMS Bot is a user-configured device automation tool for business SMS workflows. The device owner creates and controls the automation. The app provides the on-device infrastructure that executes the owner's rules.
+ReplyDesk: Business SMS Bot is a user-configured device automation tool for business SMS workflows. The device owner creates and controls the automation. The app provides the on-device infrastructure that executes the owner's rules.
 
 The owner independently controls:
 - whether automation is enabled or disabled;
@@ -28,7 +28,7 @@ Google describes this category as apps that automate repetitive actions across m
 ## Review demonstration
 The review video should show, without cuts:
 1. Fresh install / permissions not granted.
-2. ReplyDesk: Automated SMS Bot explaining why the restricted permissions are needed before the Android permission prompt.
+2. ReplyDesk: Business SMS Bot explaining why the restricted permissions are needed before the Android permission prompt.
 3. The device owner continuing and granting permissions.
 4. The owner editing their own auto-response text.
 5. The owner configuring/enabling the automation.
@@ -37,7 +37,7 @@ The review video should show, without cuts:
 8. The owner disabling automation.
 
 ## Store-listing alignment
-The Play Store description must prominently describe ReplyDesk: Automated SMS Bot as a user-configured business SMS automation tool. Do not describe restricted permissions as incidental features.
+The Play Store description must prominently describe ReplyDesk: Business SMS Bot as a user-configured business SMS automation tool. Do not describe restricted permissions as incidental features.
 
 ## Submission note
 Eligibility is subject to Google Play review. This document is the factual basis for the Permissions Declaration Form and must stay consistent with the shipped app behavior.
