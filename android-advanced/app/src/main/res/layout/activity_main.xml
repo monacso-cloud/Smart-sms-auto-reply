@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F7FB"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Smart SMS Reply"
+            android:textColor="#0B1F3A"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Missed-call auto reply + SMS chatbot — Advanced"
+            android:textColor="#526278"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/enabledSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:minHeight="56dp"
+            android:text="Automatic reply"
+            android:textColor="#0B1F3A"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Reply message"
+            android:textColor="#0B1F3A"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/messageInput"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_marginTop="8dp"
+            android:background="#FFFFFF"
+            android:gravity="top|start"
+            android:clickable="true"
+            android:cursorVisible="true"
+            android:enabled="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="14dp"
+            android:textColor="#16263D"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Delay before replying"
+            android:textColor="#0B1F3A"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/delaySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="6dp"
+            android:background="#FFFFFF" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Send again to the same caller"
+            android:textColor="#0B1F3A"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/repeatSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="6dp"
+            android:background="#FFFFFF" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="SIM used to send SMS"
+            android:textColor="#0B1F3A"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/simSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="6dp"
+            android:background="#FFFFFF" />
+
+        <Switch
+            android:id="@+id/chatbotSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:minHeight="56dp"
+            android:text="SMS chatbot"
+            android:textColor="#0B1F3A"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Keyword rules (keywords separated by commas, then =&gt; reply)"
+            android:textColor="#526278"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/chatbotRulesInput"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:layout_marginTop="8dp"
+            android:background="#FFFFFF"
+            android:clickable="true"
+            android:cursorVisible="true"
+            android:enabled="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="top|start"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="14dp"
+            android:textColor="#16263D"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Reply when no keyword matches"
+            android:textColor="#0B1F3A"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/fallbackInput"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="8dp"
+            android:background="#FFFFFF"
+            android:clickable="true"
+            android:cursorVisible="true"
+            android:enabled="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="top|start"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="14dp"
+            android:textColor="#16263D"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="26dp"
+            android:backgroundTint="#1267E5"
+            android:text="Save settings"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:background="#E7F0FF"
+            android:padding="16dp"
+            android:textColor="#123966"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Carrier SMS charges and limits may apply. Customers can text STOP to pause chatbot replies."
+            android:textColor="#66758A"
+            android:textSize="14sp" />
+    </LinearLayout>
+</ScrollView>
