@@ -44,6 +44,11 @@ public class ScheduleActivity extends Activity {
             ((CheckBox) findViewById(dayIds[i])).setChecked(prefs.getBoolean("schedule_day_" + i, true));
         }
 
+        ((Button) findViewById(R.id.presetMorningButton)).setOnClickListener(v -> setPreset(8 * 60, 12 * 60));
+        ((Button) findViewById(R.id.presetAfternoonButton)).setOnClickListener(v -> setPreset(12 * 60, 17 * 60));
+        ((Button) findViewById(R.id.presetEveningButton)).setOnClickListener(v -> setPreset(17 * 60, 22 * 60));
+        ((Button) findViewById(R.id.presetAfterHoursButton)).setOnClickListener(v -> setPreset(18 * 60, 6 * 60));
+
         startText.setOnClickListener(v -> pickTime(true));
         endText.setOnClickListener(v -> pickTime(false));
 
@@ -64,6 +69,13 @@ public class ScheduleActivity extends Activity {
             edit.apply();
             Toast.makeText(this, "Schedule saved", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void setPreset(int start, int end) {
+        startMinutes = start;
+        endMinutes = end;
+        ((RadioButton) findViewById(R.id.scheduleCustom)).setChecked(true);
+        renderTimes();
     }
 
     private void pickTime(boolean start) {
