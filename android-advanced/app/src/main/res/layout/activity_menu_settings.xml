@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F4F7FB">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+      android:orientation="vertical" android:padding="24dp">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Menu &amp; Quick Replies" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Use this section if you want customers to reply with 1, 2, 3 or 4. Change every menu label and reply to suit your business. The examples below are only a starting template."
+        android:textColor="#526278" android:textSize="15sp"/>
+    <Switch android:id="@+id/menuEnabledSwitch" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Enable numbered menu"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Menu introduction" android:textStyle="bold" android:layout_marginTop="10dp"/>
+    <EditText android:id="@+id/menuIntroInput" android:layout_width="match_parent" android:layout_height="90dp"
+        android:background="#FFFFFF" android:gravity="top|start" android:padding="12dp" android:inputType="textMultiLine"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="1 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem1Input" android:layout_width="match_parent" android:layout_height="56dp" android:background="#FFFFFF" android:padding="12dp"/>
+    <EditText android:id="@+id/menuReply1Input" android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start" android:padding="12dp" android:inputType="textMultiLine"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="2 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem2Input" android:layout_width="match_parent" android:layout_height="56dp" android:background="#FFFFFF" android:padding="12dp"/>
+    <EditText android:id="@+id/menuReply2Input" android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start" android:padding="12dp" android:inputType="textMultiLine"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="3 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem3Input" android:layout_width="match_parent" android:layout_height="56dp" android:background="#FFFFFF" android:padding="12dp"/>
+    <EditText android:id="@+id/menuReply3Input" android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start" android:padding="12dp" android:inputType="textMultiLine"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="4 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem4Input" android:layout_width="match_parent" android:layout_height="56dp" android:background="#FFFFFF" android:padding="12dp"/>
+    <EditText android:id="@+id/menuReply4Input" android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start" android:padding="12dp" android:inputType="textMultiLine"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="5 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem5Input" android:layout_width="match_parent" android:layout_height="56dp"
+        android:background="#FFFFFF" android:padding="12dp"
+        android:hint="Optional — leave blank if you do not need this menu item"/>
+    <EditText android:id="@+id/menuReply5Input" android:layout_width="match_parent" android:layout_height="110dp"
+        android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start"
+        android:padding="12dp" android:inputType="textMultiLine"
+        android:hint="Reply for option 5"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="6 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem6Input" android:layout_width="match_parent" android:layout_height="56dp"
+        android:background="#FFFFFF" android:padding="12dp"
+        android:hint="Optional — leave blank if you do not need this menu item"/>
+    <EditText android:id="@+id/menuReply6Input" android:layout_width="match_parent" android:layout_height="110dp"
+        android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start"
+        android:padding="12dp" android:inputType="textMultiLine"
+        android:hint="Reply for option 6"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="7 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem7Input" android:layout_width="match_parent" android:layout_height="56dp"
+        android:background="#FFFFFF" android:padding="12dp"
+        android:hint="Optional — leave blank if you do not need this menu item"/>
+    <EditText android:id="@+id/menuReply7Input" android:layout_width="match_parent" android:layout_height="110dp"
+        android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start"
+        android:padding="12dp" android:inputType="textMultiLine"
+        android:hint="Reply for option 7"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="8 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem8Input" android:layout_width="match_parent" android:layout_height="56dp"
+        android:background="#FFFFFF" android:padding="12dp"
+        android:hint="Optional — leave blank if you do not need this menu item"/>
+    <EditText android:id="@+id/menuReply8Input" android:layout_width="match_parent" android:layout_height="110dp"
+        android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start"
+        android:padding="12dp" android:inputType="textMultiLine"
+        android:hint="Reply for option 8"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="9 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem9Input" android:layout_width="match_parent" android:layout_height="56dp"
+        android:background="#FFFFFF" android:padding="12dp"
+        android:hint="Optional — leave blank if you do not need this menu item"/>
+    <EditText android:id="@+id/menuReply9Input" android:layout_width="match_parent" android:layout_height="110dp"
+        android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start"
+        android:padding="12dp" android:inputType="textMultiLine"
+        android:hint="Reply for option 9"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="10 — Menu label" android:textStyle="bold" android:layout_marginTop="16dp"/>
+    <EditText android:id="@+id/menuItem10Input" android:layout_width="match_parent" android:layout_height="56dp"
+        android:background="#FFFFFF" android:padding="12dp"
+        android:hint="Optional — leave blank if you do not need this menu item"/>
+    <EditText android:id="@+id/menuReply10Input" android:layout_width="match_parent" android:layout_height="110dp"
+        android:layout_marginTop="6dp" android:background="#FFFFFF" android:gravity="top|start"
+        android:padding="12dp" android:inputType="textMultiLine"
+        android:hint="Reply for option 10"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Tip: You can use up to 10 menu options. Leave any option blank if you do not need it. Replace [PRICE], [WEBSITE], [BUSINESS ADDRESS] and other placeholders with your own information."
+        android:textColor="#526278" android:textSize="14sp"/>
+    <Button android:id="@+id/saveMenuButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="20dp" android:text="Save Menu"/>
+  </LinearLayout>
+</ScrollView>

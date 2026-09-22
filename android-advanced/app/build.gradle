@@ -1,0 +1,23 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.smartreply.beta'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.smartreply.beta'
+        minSdk 26
+        targetSdk 36
+        versionCode 3
+        versionName '0.3.0-replydesk-core'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}

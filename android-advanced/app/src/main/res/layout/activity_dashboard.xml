@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#F4F7FB">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+      android:orientation="vertical" android:padding="24dp">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="ReplyDesk" android:textSize="30sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp" android:text="Set up ReplyDesk step by step. Start with Auto Reply, then add your Keywords &amp; Replies, choose your Schedule, check Call Logs, and use Test Your Bot before going live."
+        android:textSize="16sp" android:textColor="#526278"/>
+    <Button android:id="@+id/openAutoReplyButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="24dp" android:text="Auto Reply"/>
+    <Button android:id="@+id/openMenuButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Menu &amp; Quick Replies"/>
+    <Button android:id="@+id/openKeywordsButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Keywords &amp; Replies"/>
+    <Button android:id="@+id/openScheduleButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Reply Schedule"/>
+    <Button android:id="@+id/openCallLogsButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Call Logs"/>
+    <Button android:id="@+id/openTestBotButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Test Your Bot"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="#E7F0FF"
+        android:padding="16dp"
+        android:text="Need more for a larger business? ReplyDesk Pro is coming soon. Pro is being designed for larger teams and organisations, with features such as multi-staff access, departments, advanced routing, handover tools and more."
+        android:textColor="#123966"
+        android:textSize="15sp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="10dp"
+        android:enabled="false"
+        android:text="ReplyDesk Pro — Coming Soon" />
+    <Button android:id="@+id/openAccountButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Account &amp; Subscription"/>
+    <Button android:id="@+id/openLegalButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Privacy, Terms &amp; Support"/>
+    <Button android:id="@+id/openExistingButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="12dp" android:text="Advanced Existing Settings"/>
+  </LinearLayout>
+</ScrollView>

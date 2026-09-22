@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart SMS Reply Advanced</string>
+    <string name="general_business_message_template">Hi, thank you for contacting [BUSINESS NAME]. We’re unable to answer right now. Our service prices start from [PRICE]. You can view services, prices and more information here: [WEBSITE]. Reply to this SMS if you need help.</string>\n    <string name="default_message">Hi, thanks for contacting us. We’re unable to answer right now, but we’ve received your call. Reply to this message and we’ll help as soon as we can.</string>
+    <string name="default_chatbot_fallback">Thanks for your message. We haven’t matched that question yet. Please tell us what you need and a team member can follow up.</string>
+    <string name="general_business_chatbot_rules">price,cost,how much,service price=&gt;Thanks for asking. Our service prices start from [PRICE]. You can view more information here: [WEBSITE].\nbook,booking,appointment=&gt;You can view booking or service information here: [WEBSITE].\navailability,available,slot,today,tomorrow=&gt;Please check current availability here: [WEBSITE].\naddress,location,where=&gt;Our address is [BUSINESS ADDRESS].\nhours,open,opening time=&gt;Our opening hours are [BUSINESS HOURS].\nhuman,person,staff,help=&gt;Thanks. A team member will help you as soon as possible.</string>\n    <string name="default_chatbot_rules">price,cost,how much=&gt;Thanks for asking. Add your business pricing reply here.\nhours,open,opening time=&gt;Add your opening-hours reply here.\nbook,booking,appointment=&gt;Add your booking instructions or booking link here.\naddress,location,where=&gt;Add your business address here.\nhuman,person,staff,help=&gt;Thanks. A team member can help you.</string>
+    <string-array name="delay_labels">
+        <item>No delay</item>
+        <item>15 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+    </string-array>
+    <string-array name="repeat_labels">
+        <item>Every missed call</item>
+        <item>Once every 15 minutes</item>
+        <item>Once every hour</item>
+        <item>Once every 6 hours</item>
+        <item>Once every 12 hours</item>
+        <item>Once every 24 hours</item>
+    </string-array>
+    <string-array name="retention_labels">
+        <item>1 week</item>
+        <item>2 weeks</item>
+        <item>1 month</item>
+    </string-array>
+    <string-array name="call_log_period_labels">
+        <item>Past week</item>
+        <item>Past 2 weeks</item>
+        <item>This month</item>
+    </string-array>
+</resources>

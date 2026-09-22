@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F4F7FB">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+      android:orientation="vertical" android:padding="24dp">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Account &amp; Subscription" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Use this section to review your ReplyDesk plan and manage your account."
+        android:textColor="#526278" android:textSize="15sp"/>
+    <TextView android:id="@+id/planSummaryText" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="18dp" android:background="#FFFFFF" android:padding="16dp"
+        android:textColor="#16263D" android:textSize="17sp"/>
+    <Button android:id="@+id/manageSubscriptionButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="18dp" android:text="Manage Subscription"/>
+    <Button android:id="@+id/deleteAccountButton" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginTop="10dp" android:text="Delete Account"/>
+  </LinearLayout>
+</ScrollView>
