@@ -63,3 +63,25 @@ Demonstrate:
 ## Important
 Do not claim or imply that Google Play approval has already been obtained.
 Do not submit this declaration until the final Play-compliant default-handler or other approved architecture is implemented and tested.
+
+
+## User-controlled device automation architecture
+
+ReplyDesk's Direct/SIM architecture is controlled by the user on their own Android device. ReplyDesk does not use a third-party SMS gateway to send these automated replies to recipients.
+
+The user explicitly controls:
+- whether automation is enabled,
+- which events trigger replies,
+- whether missed calls, incoming SMS, or both are enabled,
+- which SIM is used,
+- the schedule and allowed days/hours,
+- repeat intervals,
+- numbered menu options,
+- keyword rules,
+- and the reply content.
+
+Messages are sent from the user's own Android device using the SIM selected by the user.
+
+This architecture statement is separate from the question of whether incoming SMS content or logs are transmitted to the ReplyDesk backend. That backend-data-flow question must be documented independently and verified against the final implementation before submission.
+
+[VERIFY] Confirm the final production implementation matches this description before using it in Google Play reviewer materials.
