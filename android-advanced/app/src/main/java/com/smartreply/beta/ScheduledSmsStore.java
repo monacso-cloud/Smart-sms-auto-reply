@@ -88,7 +88,10 @@ public final class ScheduledSmsStore {
         return null;
     }
     public static void dispatch(Context c,String id,int revision) {
-        JSONObject job=claim(c,id,revision,System.currentTimeMillis());if(job==null)return;
+        dispatch(c,id,revision,System.currentTimeMillis());
+    }
+    static void dispatch(Context c,String id,int revision,long now) {
+        JSONObject job=claim(c,id,revision,now);if(job==null)return;
         int business=job.optInt("business");JSONArray numbers=job.optJSONArray("numbers");
         for(int n=0;n<numbers.length();n++) {
             String number=numbers.optString(n);

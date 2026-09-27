@@ -108,8 +108,9 @@ public class BasicSchedulingTest {
     }
     @Test public void dueMessageUsesPinnedSimAndBecomesSentOnlyAfterCallback(){
         String id=create();ShadowSubscriptionManager.setDefaultSmsSubscriptionId(22);
-        ShadowSystemClock.advanceBy(java.time.Duration.ofMinutes(3));
         ScheduledSmsStore.dispatch(app,id,1);
+        assertEquals("Pending",ScheduledSmsStore.get(app,id).optString("state"));
+        ScheduledSmsStore.dispatch(app,id,1,ScheduledSmsStore.get(app,id).optLong("time"));
         assertEquals("Submitted",ScheduledSmsStore.get(app,id).optString("state"));
         ShadowSmsManager.TextSmsParams sent=shadowOf(SmsManager.getSmsManagerForSubscriptionId(11)).getLastSentTextMessageParams();
         assertNotNull(sent);assertEquals("Appointment reminder",sent.getText());
@@ -122,7 +123,7 @@ public class BasicSchedulingTest {
     @Test public void dueMessageFailsIfItsSimWasRemovedAndDoesNotUseDefault(){
         String id=create();ShadowSubscriptionManager.setDefaultSmsSubscriptionId(22);
         shadowOf(app.getSystemService(SubscriptionManager.class)).setActiveSubscriptionInfos(second);
-        ShadowSystemClock.advanceBy(java.time.Duration.ofMinutes(3));ScheduledSmsStore.dispatch(app,id,1);
+        ScheduledSmsStore.dispatch(app,id,1,ScheduledSmsStore.get(app,id).optLong("time"));
         assertEquals("Failed",ScheduledSmsStore.get(app,id).optString("state"));
         assertNull(shadowOf(SmsManager.getSmsManagerForSubscriptionId(22)).getLastSentTextMessageParams());
     }
