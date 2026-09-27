@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
-public class MenuSettingsActivity extends Activity {
+public class MenuSettingsActivity extends ProfileActivity {
     private static final String PREFS = "smart_reply_settings";
 
     @Override

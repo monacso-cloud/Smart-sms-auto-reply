@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
-public class DashboardActivity extends Activity {
+public class DashboardActivity extends ProfileActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +29,7 @@ public class DashboardActivity extends Activity {
         boolean enabled = prefs.getBoolean("master_enabled", prefs.getBoolean("enabled", false));
         android.widget.TextView status = findViewById(R.id.dashboardReplyStatus);
         android.widget.TextView detail = findViewById(R.id.dashboardReplyDetail);
-        status.setText(enabled ? "Automatic replies enabled" : "Your replies are paused");
+        status.setText(!SimRouter.active(this, businessId) ? "SIM inactive — replies paused" : enabled ? "Automatic replies enabled" : "Your replies are paused");
         boolean missed = prefs.getBoolean("reply_to_missed_calls", true);
         boolean sms = prefs.getBoolean("reply_to_incoming_sms", prefs.getBoolean("chatbot_enabled", false));
         boolean chatbot = prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false));
@@ -40,6 +40,6 @@ public class DashboardActivity extends Activity {
 
     private void bind(int id, Class<?> target) {
         Button button = findViewById(id);
-        button.setOnClickListener(v -> startActivity(new Intent(this, target)));
+        button.setOnClickListener(v -> openProfile(target));
     }
 }

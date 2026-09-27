@@ -13,7 +13,14 @@ public final class AppCallLogStore {
     private AppCallLogStore() {}
 
     public static synchronized void add(Context context, String type, String number, String replyStatus) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        add(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE), type, number, replyStatus);
+    }
+
+    public static synchronized void add(Context context, int id, String type, String number, String status) {
+        add(BusinessProfiles.prefs(context, id), type, number, status);
+    }
+
+    private static void add(SharedPreferences prefs, String type, String number, String replyStatus) {
         JSONArray current = readArray(prefs);
         JSONArray next = new JSONArray();
 
@@ -23,7 +30,7 @@ public final class AppCallLogStore {
 
         for (int i = 0; i < current.length(); i++) {
             JSONObject item = current.optJSONObject(i);
-            if (item != null && item.optLong("timestamp", 0) >= cutoff) next.put(item);
+            if (item != null && (!prefs.getBoolean("auto_delete_logs", true) || item.optLong("timestamp", 0) >= cutoff)) next.put(item);
         }
 
         JSONObject event = new JSONObject();
@@ -60,7 +67,7 @@ public final class AppCallLogStore {
 
         for (int i = 0; i < current.length(); i++) {
             JSONObject item = current.optJSONObject(i);
-            if (item != null && item.optLong("timestamp", 0) >= cutoff) next.put(item);
+            if (item != null && (!prefs.getBoolean("auto_delete_logs", true) || item.optLong("timestamp", 0) >= cutoff)) next.put(item);
         }
         prefs.edit().putString(KEY, next.toString()).apply();
     }

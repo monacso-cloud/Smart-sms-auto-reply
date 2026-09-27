@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ProfileActivity {
     private static final int PERMISSION_REQUEST = 1001;
     private static final String PREFS = "smart_reply_settings";
 
@@ -104,34 +104,11 @@ public class MainActivity extends Activity {
     }
 
     private void loadSimCards() {
-        List<String> labels = new ArrayList<>();
-        subscriptionIds.clear();
-
-        if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-            SubscriptionManager manager = (SubscriptionManager) getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
-            List<SubscriptionInfo> subscriptions = manager.getActiveSubscriptionInfoList();
-            if (subscriptions != null) {
-                for (SubscriptionInfo info : subscriptions) {
-                    subscriptionIds.add(info.getSubscriptionId());
-                    String carrier = String.valueOf(info.getCarrierName());
-                    labels.add("SIM " + (info.getSimSlotIndex() + 1) + " — " + carrier);
-                }
-            }
-        }
-
-        if (labels.isEmpty()) {
-            labels.add("Default SIM");
-            subscriptionIds.add(SubscriptionManager.getDefaultSmsSubscriptionId());
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        simSpinner.setAdapter(adapter);
-
-        int savedId = getSharedPreferences(PREFS, MODE_PRIVATE)
-                .getInt("subscription_id", SubscriptionManager.getDefaultSmsSubscriptionId());
-        int selectedIndex = subscriptionIds.indexOf(savedId);
-        simSpinner.setSelection(selectedIndex >= 0 ? selectedIndex : 0);
+        subscriptionIds.clear(); subscriptionIds.add(businessId);
+        String label = "Same SIM as incoming — " + BusinessProfiles.prefs(this, businessId).getString("sim_label", "");
+        simSpinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
+                new String[]{label}));
+        simSpinner.setEnabled(false);
     }
 
     private void saveSettings() {
@@ -153,7 +130,7 @@ public class MainActivity extends Activity {
                 .putString("message", message)
                 .putInt("delay_seconds", delay)
                 .putInt("repeat_minutes", repeatMinutes)
-                .putInt("subscription_id", subscriptionId)
+                
                 .putBoolean("chatbot_enabled", chatbotSwitch.isChecked())
                 .putBoolean("reply_to_incoming_sms", chatbotSwitch.isChecked())
                 .putString("chatbot_rules", chatbotRulesInput.getText().toString().trim())

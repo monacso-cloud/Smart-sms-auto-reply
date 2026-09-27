@@ -22,11 +22,13 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         if (!"android.provider.Telephony.SMS_RECEIVED".equals(intent.getAction())) return;
         if (context.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return;
 
-        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (!ReplyPolicy.shouldReply(context, "sms")) return;
-
         Bundle bundle = intent.getExtras();
-        if (bundle == null) return;
+        int subscriptionId = SimRouter.smsSubscription(bundle);
+        if (!BusinessProfiles.exists(context, subscriptionId) || !SimRouter.active(context, subscriptionId)) {
+            ReplySender.issue(context, "SMS skipped: receiving SIM could not be identified, is inactive, or has no profile.");
+            return;
+        }
+        SharedPreferences prefs = BusinessProfiles.prefs(context, subscriptionId);
         Object[] pdus = (Object[]) bundle.get("pdus");
         if (pdus == null || pdus.length == 0) return;
 
@@ -41,19 +43,26 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         }
         if (sender == null || body.length() == 0) return;
 
+        handleMessage(context, subscriptionId, sender, body.toString());
+    }
+
+    void handleMessage(Context context, int subscriptionId, String sender, String body) {
+        if (!BusinessProfiles.exists(context, subscriptionId) || !SimRouter.active(context, subscriptionId)) return;
+        SharedPreferences prefs = BusinessProfiles.prefs(context, subscriptionId);
         String key = Integer.toHexString(sender.hashCode());
-        String normalized = body.toString().trim().toLowerCase(Locale.ROOT);
+        String normalized = body.trim().toLowerCase(Locale.ROOT);
         if (normalized.equals("stop") || normalized.equals("unsubscribe")) {
             prefs.edit().putBoolean("chat_opt_out_" + key, true).apply();
-            send(context, prefs, sender, "You have been unsubscribed from automatic SMS replies. Text START to enable them again.");
+            if (ReplyPolicy.shouldReply(prefs, "sms")) ReplySender.send(context, subscriptionId, sender, "You have been unsubscribed from automatic SMS replies. Text START to enable them again.", "SMS");
             return;
         }
         if (normalized.equals("start")) {
             prefs.edit().remove("chat_opt_out_" + key).apply();
-            send(context, prefs, sender, "Automatic SMS replies are active again. How can we help?");
+            if (ReplyPolicy.shouldReply(prefs, "sms")) ReplySender.send(context, subscriptionId, sender, "Automatic SMS replies are active again. How can we help?", "SMS");
             return;
         }
         if (prefs.getBoolean("chat_opt_out_" + key, false)) return;
+        if (!ReplyPolicy.shouldReply(prefs, "sms")) return;
 
         long now = System.currentTimeMillis();
         long last = prefs.getLong("chat_last_" + key, 0L);
@@ -71,7 +80,7 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         }
         if (reply == null || reply.trim().isEmpty()) return;
 
-        send(context, prefs, sender, reply.trim());
+        if (!ReplySender.send(context, subscriptionId, sender, reply.trim(), "SMS")) return;
         prefs.edit()
                 .putLong("chat_last_" + key, now)
                 .putLong("last_sent_at", now)
@@ -100,24 +109,4 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         return null;
     }
 
-    private void send(Context context, SharedPreferences prefs, String number, String message) {
-        message = withAutomationDisclosure(message);
-        int subscriptionId = prefs.getInt(
-                "subscription_id", SubscriptionManager.getDefaultSmsSubscriptionId());
-        SmsManager manager = subscriptionId == SubscriptionManager.INVALID_SUBSCRIPTION_ID
-                ? SmsManager.getDefault()
-                : SmsManager.getSmsManagerForSubscriptionId(subscriptionId);
-        ArrayList<String> parts = manager.divideMessage(message);
-        if (parts.size() > 1) manager.sendMultipartTextMessage(number, null, parts, null, null);
-        else manager.sendTextMessage(number, null, message, null, null);
-    }
-
-    private String withAutomationDisclosure(String message) {
-        if (message == null) return "Automated reply:";
-        String clean = message.trim();
-        if (clean.toLowerCase(java.util.Locale.ROOT).startsWith("automated reply:")) {
-            return clean;
-        }
-        return "Automated reply:\n" + clean;
-    }
 }

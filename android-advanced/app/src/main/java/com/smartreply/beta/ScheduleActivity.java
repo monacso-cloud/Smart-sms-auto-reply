@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-public class ScheduleActivity extends Activity {
+public class ScheduleActivity extends ProfileActivity {
     private static final String PREFS = "smart_reply_settings";
     private int startMinutes;
     private int endMinutes;

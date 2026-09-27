@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
-public class TestBotActivity extends Activity {
+public class TestBotActivity extends ProfileActivity {
     private static final String PREFS = "smart_reply_settings";
 
     @Override
@@ -67,9 +67,7 @@ public class TestBotActivity extends Activity {
             for (String keyword : keywords.split(",")) {
                 String clean = keyword.trim().toLowerCase(Locale.ROOT);
                 if (!clean.isEmpty() && incoming.contains(clean)) {
-                    if (best == null || clean.length() > best.keyword.length()) {
-                        best = new Match(clean, reply);
-                    }
+                    return new Match(clean, reply);
                 }
             }
         }

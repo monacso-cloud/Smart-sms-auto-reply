@@ -7,7 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class KeywordsActivity extends Activity {
+public class KeywordsActivity extends ProfileActivity {
     private static final String PREFS = "smart_reply_settings";
 
     @Override
@@ -34,7 +34,7 @@ public class KeywordsActivity extends Activity {
             }
             String existing = editor.getText().toString().trim();
             String rule = keywords + "=>" + reply;
-            editor.setText(existing.isEmpty() ? rule : existing + "\\n" + rule);
+            editor.setText(existing.isEmpty() ? rule : existing + "\n" + rule);
             keywordsInput.setText("");
             replyInput.setText("");
         });

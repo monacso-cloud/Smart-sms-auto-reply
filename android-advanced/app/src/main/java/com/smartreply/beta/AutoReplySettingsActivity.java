@@ -10,7 +10,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-public class AutoReplySettingsActivity extends Activity {
+public class AutoReplySettingsActivity extends ProfileActivity {
     private static final String PREFS = "smart_reply_settings";
     private Switch masterSwitch;
     private Switch missedSwitch;

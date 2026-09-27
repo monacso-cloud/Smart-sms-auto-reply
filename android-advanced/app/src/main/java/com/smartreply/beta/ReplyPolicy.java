@@ -10,8 +10,7 @@ public final class ReplyPolicy {
 
     private ReplyPolicy() {}
 
-    public static boolean shouldReply(Context context, String channel) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+    public static boolean shouldReply(SharedPreferences prefs, String channel) {
 
         boolean masterEnabled = prefs.contains("master_enabled")
                 ? prefs.getBoolean("master_enabled", false)

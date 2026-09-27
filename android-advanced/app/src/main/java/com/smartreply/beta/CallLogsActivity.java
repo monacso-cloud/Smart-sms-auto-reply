@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class CallLogsActivity extends Activity {
+public class CallLogsActivity extends ProfileActivity {
     private TextView logText;
     private Spinner periodSpinner;
 
@@ -43,40 +43,7 @@ public class CallLogsActivity extends Activity {
         long cutoff = now - days * 24L * 60L * 60L * 1000L;
 
         StringBuilder text = new StringBuilder();
-        text.append("PHONE CALL LOG\n");
-
-        if (checkSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
-            try (Cursor cursor = getContentResolver().query(
-                    CallLog.Calls.CONTENT_URI,
-                    new String[] {CallLog.Calls.NUMBER, CallLog.Calls.DATE, CallLog.Calls.TYPE},
-                    CallLog.Calls.DATE + " >= ?",
-                    new String[] {String.valueOf(cutoff)},
-                    CallLog.Calls.DATE + " DESC")) {
-
-                if (cursor != null) {
-                    int count = 0;
-                    while (cursor.moveToNext() && count < 300) {
-                        String number = cursor.getString(cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER));
-                        long timestamp = cursor.getLong(cursor.getColumnIndexOrThrow(CallLog.Calls.DATE));
-                        int type = cursor.getInt(cursor.getColumnIndexOrThrow(CallLog.Calls.TYPE));
-                        text.append(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
-                                .format(new Date(timestamp)))
-                                .append("  •  ")
-                                .append(callType(type))
-                                .append("  •  ")
-                                .append(mask(number))
-                                .append("\n");
-                        count++;
-                    }
-                }
-            } catch (Exception error) {
-                text.append("Unable to read phone call history.\n");
-            }
-        } else {
-            text.append("Call Log permission is required to show phone call history.\n");
-        }
-
-        text.append("\nREPLYDESK AUTO-REPLY HISTORY\n");
+        text.append(BusinessProfiles.summary(this, businessId)).append("\n\nREPLY HISTORY\n");
         JSONArray logs = AppCallLogStore.get(this);
         boolean hasReplyDeskLogs = false;
         for (int i = logs.length() - 1; i >= 0; i--) {

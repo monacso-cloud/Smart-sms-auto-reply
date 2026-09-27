@@ -60,7 +60,7 @@ jobs:
           SMART_SMS_RELEASE_KEYSTORE: ${{ runner.temp }}/replydesk-release.jks
           SMART_SMS_RELEASE_STORE_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_STORE_PASSWORD }}
           SMART_SMS_RELEASE_KEY_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_KEY_PASSWORD }}
-        run: gradle -p android-advanced assembleRelease
+        run: gradle -p android-advanced testDebugUnitTest assembleRelease
       - name: Verify APK signature and identity
         shell: bash
         run: |
