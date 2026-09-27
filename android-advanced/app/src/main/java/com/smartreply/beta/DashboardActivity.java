@@ -22,6 +22,22 @@ public class DashboardActivity extends Activity {
         bind(R.id.openLegalButton, LegalSupportActivity.class);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        android.content.SharedPreferences prefs = getSharedPreferences("smart_reply_settings", MODE_PRIVATE);
+        boolean enabled = prefs.getBoolean("master_enabled", prefs.getBoolean("enabled", false));
+        android.widget.TextView status = findViewById(R.id.dashboardReplyStatus);
+        android.widget.TextView detail = findViewById(R.id.dashboardReplyDetail);
+        status.setText(enabled ? "Automatic replies enabled" : "Your replies are paused");
+        boolean missed = prefs.getBoolean("reply_to_missed_calls", true);
+        boolean sms = prefs.getBoolean("reply_to_incoming_sms", prefs.getBoolean("chatbot_enabled", false));
+        boolean chatbot = prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false));
+        detail.setText("Missed calls: " + (missed ? "on" : "off")
+                + "\nIncoming SMS: " + (sms ? (chatbot ? "chatbot" : "plain message") : "off")
+                + "\nYour schedule and phone permissions also apply.");
+    }
+
     private void bind(int id, Class<?> target) {
         Button button = findViewById(id);
         button.setOnClickListener(v -> startActivity(new Intent(this, target)));

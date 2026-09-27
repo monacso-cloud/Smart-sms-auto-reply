@@ -1,77 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F4F7FB">
-  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-      android:orientation="vertical" android:padding="24dp">
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Auto Reply" android:textSize="28sp" android:textStyle="bold" android:textColor="#0B1F3A"/>
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Use this section to choose what ReplyDesk should answer automatically. Turn on Missed Calls, Incoming SMS, or both. You can change these settings anytime."
-        android:textColor="#526278" android:textSize="15sp"/>
-    <Switch android:id="@+id/masterReplySwitch" android:layout_width="match_parent" android:layout_height="56dp"
-        android:layout_marginTop="20dp" android:text="Master Auto Reply"/>
-    <Switch android:id="@+id/missedCallReplySwitch" android:layout_width="match_parent" android:layout_height="56dp"
-        android:text="Reply to missed calls"/>
-    <Switch android:id="@+id/incomingSmsReplySwitch" android:layout_width="match_parent" android:layout_height="56dp"
-        android:text="Reply to incoming SMS"/>
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="20dp" android:text="Missed-call reply message" android:textSize="18sp"
-        android:textStyle="bold" android:textColor="#0B1F3A" android:labelFor="@+id/missedCallMessageInput"/>
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="6dp" android:text="Sent by SMS after a missed call. Turn off the menu option below to send only your message."
-        android:textSize="14sp" android:textColor="#526278"/>
-    <EditText android:id="@id/missedCallMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" android:minHeight="160dp" android:minLines="5"
-        android:gravity="top|start" android:inputType="textCapSentences|textMultiLine"
-        android:background="#FFFFFF" android:padding="16dp" android:textSize="16sp"
-        android:textColor="#0B1F3A" android:textColorHint="#526278"
-        android:hint="Type your missed-call reply here"/>
-    <Switch android:id="@+id/missedCallMenuSwitch" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:minHeight="56dp" android:text="Add my numbered menu after the missed-call message"/>
-    <Switch android:id="@+id/smsChatbotModeSwitch" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:minHeight="56dp" android:layout_marginTop="20dp" android:text="Use chatbot for incoming SMS"/>
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="OFF: send your plain SMS reply. ON: use menu and keyword replies, with an unmatched-message reply."
-        android:textSize="14sp" android:textColor="#526278"/>
-    <LinearLayout android:id="@+id/plainSmsSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="20dp" android:text="Incoming SMS — automatic reply message" android:textSize="18sp"
-        android:textStyle="bold" android:textColor="#0B1F3A" android:labelFor="@+id/plainSmsMessageInput"/>
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="6dp" android:text="Send this same message after an incoming SMS. No chatbot, menu or keyword setup is needed. STOP and START still control opt-out."
-        android:textSize="14sp" android:textColor="#526278"/>
-    <EditText android:id="@id/plainSmsMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" android:minHeight="160dp" android:minLines="5"
-        android:gravity="top|start" android:inputType="textCapSentences|textMultiLine"
-        android:background="#FFFFFF" android:padding="16dp" android:textSize="16sp"
-        android:textColor="#0B1F3A" android:textColorHint="#526278"
-        android:hint="Example: Thanks for your message. I am with a client and will reply when available."/>
-    </LinearLayout>
-    <LinearLayout android:id="@+id/chatbotFallbackSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="20dp" android:text="Chatbot — unmatched-message reply" android:textSize="18sp"
-        android:textStyle="bold" android:textColor="#0B1F3A" android:labelFor="@+id/smsReplyMessageInput"/>
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="6dp" android:text="Sent when an incoming SMS does not match a menu number or keyword. Matching messages use your Menu &amp; Quick Replies or Keywords &amp; Replies instead. STOP and START keep their system replies."
-        android:textSize="14sp" android:textColor="#526278"/>
-    <EditText android:id="@id/smsReplyMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" android:minHeight="160dp" android:minLines="5"
-        android:gravity="top|start" android:inputType="textCapSentences|textMultiLine"
-        android:background="#FFFFFF" android:padding="16dp" android:textSize="16sp"
-        android:textColor="#0B1F3A" android:textColorHint="#526278"
-        android:hint="Type your default SMS reply here"/>
-    </LinearLayout>
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_marginTop="20dp" android:text="Keep ReplyDesk call logs" android:textStyle="bold"/>
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="Choose how long ReplyDesk should keep its own call and reply history: 1 week, 2 weeks or 1 month. Old ReplyDesk logs can be deleted automatically to save space."
-        android:textColor="#526278" android:textSize="14sp"/>
-    <Spinner android:id="@+id/retentionSpinner" android:layout_width="match_parent" android:layout_height="56dp"/>
-    <Switch android:id="@+id/autoDeleteLogsSwitch" android:layout_width="match_parent" android:layout_height="56dp"
-        android:text="Automatically delete old logs"/>
-    <Button android:id="@+id/saveAutoReplyButton" android:layout_width="match_parent" android:layout_height="56dp"
-        android:layout_marginTop="24dp" android:text="Save"/>
-  </LinearLayout>
-</ScrollView>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="#F4F7FB" android:fitsSystemWindows="true">
+<ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+<Button android:id="@+id/backToDashboardButton" style="@style/ReplyDeskTile" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" android:text="‹ Dashboard"/>
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="Automatic replies" android:textSize="28sp" android:fontFamily="sans-serif-medium" android:textColor="#102D4D"/>
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Your words, sent when you cannot reply personally." android:textSize="16sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" android:layout_marginTop="6dp"/>
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="vertical" android:padding="18dp" android:background="@drawable/rd_card"><Switch android:id="@+id/masterReplySwitch" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="Enable automatic replies" android:textSize="16sp" android:textColor="#102D4D" android:switchPadding="12dp"/><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Choose missed calls, incoming SMS, or both. Your reply schedule still applies." android:textSize="15sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" /></LinearLayout>
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="vertical" android:padding="18dp" android:background="@drawable/rd_card"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="01  MISSED CALLS" android:textSize="12sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" android:letterSpacing="0.10"/><Switch android:id="@+id/missedCallReplySwitch" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="Reply after a missed call" android:textSize="16sp" android:textColor="#102D4D" android:switchPadding="12dp"/><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Someone calls and you cannot answer. ReplyDesk sends your message by SMS." android:textSize="15sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" /><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Your missed-call message" android:textSize="15sp" android:textStyle="bold" android:textColor="#163D66" android:labelFor="@+id/missedCallMessageInput"/><EditText android:id="@id/missedCallMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:minHeight="156dp" android:minLines="5" android:gravity="top|start" android:inputType="textCapSentences|textMultiLine" android:hint="Example: Sorry I missed your call. I am with a client and will call you back when available."/><Switch android:id="@+id/missedCallMenuSwitch" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="Add my numbered menu" android:textSize="16sp" android:textColor="#102D4D" android:switchPadding="12dp"/><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Leave this off to send only your message. Adding a menu also requires Menu &amp; quick replies to be enabled." android:textSize="13sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" /></LinearLayout>
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="vertical" android:padding="18dp" android:background="@drawable/rd_card"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="02  INCOMING SMS" android:textSize="12sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" android:letterSpacing="0.10"/><Switch android:id="@+id/incomingSmsReplySwitch" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="Reply to incoming SMS" android:textSize="16sp" android:textColor="#102D4D" android:switchPadding="12dp"/><Switch android:id="@+id/smsChatbotModeSwitch" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="Use chatbot replies" android:textSize="16sp" android:textColor="#102D4D" android:switchPadding="12dp"/><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="OFF = one message written by you. ON = answers based on menu numbers and keywords." android:textSize="14sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" />
+<LinearLayout android:id="@+id/plainSmsSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Your automatic SMS message" android:textSize="15sp" android:textStyle="bold" android:textColor="#163D66" android:labelFor="@+id/plainSmsMessageInput"/><EditText android:id="@id/plainSmsMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:minHeight="156dp" android:minLines="5" android:gravity="top|start" android:inputType="textCapSentences|textMultiLine" android:hint="Example: Thanks for your message. I am unavailable right now and will reply as soon as I can."/>
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="No chatbot setup needed. This message is used for incoming SMS, subject to your schedule and reply limits." android:textSize="13sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" android:layout_marginTop="10dp"/>
+</LinearLayout>
+<LinearLayout android:id="@+id/chatbotFallbackSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="When no menu or keyword matches" android:textSize="15sp" android:textStyle="bold" android:textColor="#163D66" android:labelFor="@+id/smsReplyMessageInput"/><EditText android:id="@id/smsReplyMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:minHeight="156dp" android:minLines="5" android:gravity="top|start" android:inputType="textCapSentences|textMultiLine" android:hint="Write the message to send when your chatbot cannot match a question."/>
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Add specific answers in Menu &amp; quick replies or Keywords &amp; answers." android:textSize="13sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" android:layout_marginTop="10dp"/>
+</LinearLayout>
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="STOP / START controls remain active in both SMS modes." android:textSize="13sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" android:layout_marginTop="12dp"/></LinearLayout>
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="vertical" android:padding="18dp" android:background="@drawable/rd_card"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="03  REPLY HISTORY" android:textSize="12sp" android:textColor="#53677F" android:lineSpacingExtra="3dp" android:letterSpacing="0.10"/><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Keep history for" android:textSize="15sp" android:textStyle="bold" android:textColor="#163D66" android:labelFor="@+id/retentionSpinner"/><Spinner android:id="@id/retentionSpinner" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="8dp"/><Switch android:id="@+id/autoDeleteLogsSwitch" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="Delete old logs automatically" android:textSize="16sp" android:textColor="#102D4D" android:switchPadding="12dp"/></LinearLayout>
+</LinearLayout></ScrollView>
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:background="#FFFFFF" android:elevation="6dp">
+<Button android:id="@+id/saveAutoReplyButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:text="Save my reply settings"/>
+</LinearLayout></LinearLayout>

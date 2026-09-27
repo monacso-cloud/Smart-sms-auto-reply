@@ -32,7 +32,7 @@ public class TestBotActivity extends Activity {
                 return;
             }
             if (!prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false))) {
-                result.setText("Plain SMS reply (no chatbot):\\n\\n" +
+                result.setText("Plain SMS reply (no chatbot):\n\n" +
                         prefs.getString("sms_reply_message", getString(R.string.default_plain_sms_reply)));
                 return;
             }
@@ -59,7 +59,7 @@ public class TestBotActivity extends Activity {
 
     private Match findReply(String incoming, String rules) {
         Match best = null;
-        for (String line : rules.split("\\r?\\n")) {
+        for (String line : rules.split("\\r?\n")) {
             int separator = line.indexOf("=>");
             if (separator <= 0) continue;
             String keywords = line.substring(0, separator);

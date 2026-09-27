@@ -28,6 +28,7 @@ public class AutoReplySettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_reply_settings);
 
+        findViewById(R.id.backToDashboardButton).setOnClickListener(v -> finish());
         plainSmsMessageInput = findViewById(R.id.plainSmsMessageInput);
         smsChatbotModeSwitch = findViewById(R.id.smsChatbotModeSwitch);
         missedCallMenuSwitch = findViewById(R.id.missedCallMenuSwitch);

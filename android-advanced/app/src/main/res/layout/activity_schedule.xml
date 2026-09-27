@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:fitsSystemWindows="true"
     android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F4F7FB">
   <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
       android:orientation="vertical" android:padding="24dp">
@@ -37,9 +37,9 @@
           android:layout_weight="1" android:text="After Hours"/>
     </LinearLayout>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Start time" android:textStyle="bold" android:layout_marginTop="16dp"/>
-    <TextView android:id="@+id/startTimeText" android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:textSize="18sp" android:background="#FFFFFF" android:padding="12dp"/>
+    <TextView android:id="@+id/startTimeText" android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:textSize="18sp" android:background="@drawable/rd_field" android:padding="12dp"/>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="End time" android:textStyle="bold" android:layout_marginTop="12dp"/>
-    <TextView android:id="@+id/endTimeText" android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:textSize="18sp" android:background="#FFFFFF" android:padding="12dp"/>
+    <TextView android:id="@+id/endTimeText" android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:textSize="18sp" android:background="@drawable/rd_field" android:padding="12dp"/>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Days" android:textStyle="bold" android:layout_marginTop="16dp"/>
     <CheckBox android:id="@+id/daySunday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Sunday"/>
     <CheckBox android:id="@+id/dayMonday" android:layout_width="match_parent" android:layout_height="44dp" android:text="Monday"/>
