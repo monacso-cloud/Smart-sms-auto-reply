@@ -10,12 +10,30 @@ android {
         applicationId 'com.smartreply.beta'
         minSdk 26
         targetSdk 36
-        versionCode 3
-        versionName '0.3.0-replydesk-core'
+        versionCode 4
+        versionName '0.4.0-replydesk-core'
+    }
+
+    signingConfigs {
+        release {
+            def releaseKey = System.getenv('SMART_SMS_RELEASE_KEYSTORE')
+            def releaseStorePassword = System.getenv('SMART_SMS_RELEASE_STORE_PASSWORD')
+            def releaseKeyPassword = System.getenv('SMART_SMS_RELEASE_KEY_PASSWORD')
+            if (releaseKey && releaseStorePassword && releaseKeyPassword) {
+                storeFile file(releaseKey)
+                storePassword releaseStorePassword
+                keyAlias 'smart-sms-reply'
+                keyPassword releaseKeyPassword
+                v1SigningEnabled true
+                v2SigningEnabled true
+            }
+        }
     }
 
     buildTypes {
         release {
+            debuggable false
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

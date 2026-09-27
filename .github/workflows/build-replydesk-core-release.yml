@@ -1,0 +1,79 @@
+name: Build ReplyDesk Core signed candidate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/replydesk-platform-foundation
+    paths:
+      - "android-advanced/**"
+      - ".github/workflows/build-replydesk-core-release.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-signed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check signing configuration
+        env:
+          KEYSTORE_B64: ${{ secrets.SMART_SMS_RELEASE_KEYSTORE_B64 }}
+          STORE_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          missing=0
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::error::Missing SMART_SMS_RELEASE_KEYSTORE_B64 repository secret."
+            missing=1
+          fi
+          if [ -z "$STORE_PASSWORD" ]; then
+            echo "::error::Missing SMART_SMS_RELEASE_STORE_PASSWORD repository secret."
+            missing=1
+          fi
+          if [ -z "$KEY_PASSWORD" ]; then
+            echo "::error::Missing SMART_SMS_RELEASE_KEY_PASSWORD repository secret."
+            missing=1
+          fi
+          test "$missing" -eq 0
+          umask 077
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/replydesk-release.jks"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v4
+      - name: Install Android API 36
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - name: Build signed APK
+        env:
+          SMART_SMS_RELEASE_KEYSTORE: ${{ runner.temp }}/replydesk-release.jks
+          SMART_SMS_RELEASE_STORE_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_STORE_PASSWORD }}
+          SMART_SMS_RELEASE_KEY_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_KEY_PASSWORD }}
+        run: gradle -p android-advanced assembleRelease
+      - name: Verify APK signature and identity
+        shell: bash
+        run: |
+          apk="android-advanced/app/build/outputs/apk/release/app-release.apk"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$apk" > "$RUNNER_TEMP/replydesk-signer.txt"
+          grep -qi 'Signer #1 certificate SHA-256 digest: b75a689cf031e3954fa9d8353366b8adf045a01bdaf4f6e5cf3ae9133a1af26b' "$RUNNER_TEMP/replydesk-signer.txt"
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$apk" > "$RUNNER_TEMP/replydesk-package.txt"
+          grep -q "package: name='com.smartreply.beta'" "$RUNNER_TEMP/replydesk-package.txt"
+          if grep -q 'application-debuggable' "$RUNNER_TEMP/replydesk-package.txt"; then
+            echo "::error::Release APK must not be debuggable."
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ReplyDesk-Core-Signed-Candidate
+          path: android-advanced/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+      - name: Remove temporary signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/replydesk-release.jks"
