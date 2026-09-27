@@ -106,4 +106,24 @@ public class BasicSchedulingTest {
         new SmsReplyReceiver().onReceive(app,new Intent("android.provider.Telephony.SMS_RECEIVED"));
         assertTrue(Diagnostics.report(app).contains("SEND_SMS permission missing"));
     }
+    @Test public void dueMessageUsesPinnedSimAndBecomesSentOnlyAfterCallback(){
+        String id=create();ShadowSubscriptionManager.setDefaultSmsSubscriptionId(22);
+        ShadowSystemClock.advanceBy(java.time.Duration.ofMinutes(3));
+        ScheduledSmsStore.dispatch(app,id,1);
+        assertEquals("Submitted",ScheduledSmsStore.get(app,id).optString("state"));
+        ShadowSmsManager.TextSmsParams sent=shadowOf(SmsManager.getSmsManagerForSubscriptionId(11)).getLastSentTextMessageParams();
+        assertNotNull(sent);assertEquals("Appointment reminder",sent.getText());
+        assertNull(shadowOf(SmsManager.getSmsManagerForSubscriptionId(22)).getLastSentTextMessageParams());
+        Intent callback=shadowOf(sent.getSentIntent()).getSavedIntent();
+        DeliveryTracker.result(app,callback.getStringExtra("delivery_token"),0,true,"");
+        assertEquals("Sent",ScheduledSmsStore.get(app,id).optString("state"));
+        ScheduledSmsStore.dispatch(app,id,1);assertEquals(1,BusinessProfiles.prefs(app,11).getInt("sent_total",0));
+    }
+    @Test public void dueMessageFailsIfItsSimWasRemovedAndDoesNotUseDefault(){
+        String id=create();ShadowSubscriptionManager.setDefaultSmsSubscriptionId(22);
+        shadowOf(app.getSystemService(SubscriptionManager.class)).setActiveSubscriptionInfos(second);
+        ShadowSystemClock.advanceBy(java.time.Duration.ofMinutes(3));ScheduledSmsStore.dispatch(app,id,1);
+        assertEquals("Failed",ScheduledSmsStore.get(app,id).optString("state"));
+        assertNull(shadowOf(SmsManager.getSmsManagerForSubscriptionId(22)).getLastSentTextMessageParams());
+    }
 }
