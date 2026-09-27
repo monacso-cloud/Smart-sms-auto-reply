@@ -81,14 +81,20 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         String reply;
         if (prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false))) {
             reply = findMenuReply(normalized, prefs);
-            if (reply == null) reply = findReply(normalized, prefs.getString("chatbot_rules", ""));
+            if (reply == null) reply = KeywordRules.find(normalized, prefs.getString("chatbot_rules", ""));
+            String fallback=prefs.getString("chatbot_fallback", context.getString(R.string.default_chatbot_fallback));
+            if (reply == null && KeywordRules.containsRule(fallback)) reply=KeywordRules.find(normalized, fallback);
             if (reply == null || reply.trim().isEmpty()) {
-                reply = prefs.getString("chatbot_fallback", context.getString(R.string.default_chatbot_fallback));
+                reply = KeywordRules.containsRule(fallback) ? context.getString(R.string.default_chatbot_fallback) : fallback;
             }
         } else {
-            reply = prefs.getString("sms_reply_message", context.getString(R.string.default_plain_sms_reply));
+            String plain=prefs.getString("sms_reply_message", context.getString(R.string.default_plain_sms_reply));
+            reply=KeywordRules.containsRule(plain) ? KeywordRules.find(normalized, plain) : plain;
+            if(reply==null && KeywordRules.containsRule(plain)) {
+                skip(context,subscriptionId,sender,"Keyword rules are in the plain SMS field; move them to Keywords & answers");return;
+            }
         }
-        if (reply == null || reply.trim().isEmpty()) { skip(context,subscriptionId,sender,"Reply text is empty"); return; }
+        if (reply == null || reply.trim().isEmpty() || KeywordRules.containsRule(reply)) { skip(context,subscriptionId,sender,"Reply text is empty or contains keyword configuration; nothing sent"); return; }
 
         if (!ReplySender.send(context, subscriptionId, sender, reply.trim(), "SMS")) return;
         prefs.edit()
@@ -107,20 +113,6 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         if (!incoming.matches("(10|[1-9])")) return null;
         String reply = prefs.getString("menu_reply_" + incoming, "").trim();
         return reply.isEmpty() ? null : reply;
-    }
-
-    private String findReply(String incoming, String rules) {
-        for (String line : rules.split("\\r?\\n")) {
-            int separator = line.indexOf("=>");
-            if (separator <= 0) continue;
-            String keywords = line.substring(0, separator);
-            String reply = line.substring(separator + 2).trim();
-            for (String keyword : keywords.split(",")) {
-                String clean = keyword.trim().toLowerCase(Locale.ROOT);
-                if (!clean.isEmpty() && incoming.contains(clean)) return reply;
-            }
-        }
-        return null;
     }
 
 }

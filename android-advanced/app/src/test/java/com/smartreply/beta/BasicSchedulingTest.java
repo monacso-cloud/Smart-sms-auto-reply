@@ -127,4 +127,21 @@ public class BasicSchedulingTest {
         assertEquals("Failed",ScheduledSmsStore.get(app,id).optString("state"));
         assertNull(shadowOf(SmsManager.getSmsManagerForSubscriptionId(22)).getLastSentTextMessageParams());
     }
+    @Test public void pastedRulesChooseOnlyAvailabilityAnswerAndNeverSendConfiguration(){
+        String pasted="reschedule,change my appointment=>Use confirmation email. POWERED BY: ReplyDesk - Business SMS Bot "
+            +"available,availability,any cancellation=>See the booking website. POWERED BY: ReplyDesk - Business SMS Bot "
+            +"cancel,cancellation=>Use cancellation option. POWERED BY: ReplyDesk - Business SMS Bot";
+        assertEquals("See the booking website. POWERED BY: ReplyDesk - Business SMS Bot",KeywordRules.find("Are you available today?",pasted));
+        assertEquals(3,KeywordRules.normalize(pasted).split("\\n").length);
+        assertFalse(ReplySender.send(app,11,"+61400000000",pasted,"SMS"));
+        assertNull(shadowOf(SmsManager.getSmsManagerForSubscriptionId(11)).getLastSentTextMessageParams());
+        SharedPreferences p=BusinessProfiles.prefs(app,11);
+        p.edit().putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true)
+            .putBoolean("sms_chatbot_mode",true).putString("chatbot_rules","")
+            .putString("chatbot_fallback",pasted).apply();
+        new SmsReplyReceiver().handleMessage(app,11,"+61400000000","Are you available today?");
+        ShadowSmsManager.TextSmsParams sent=shadowOf(SmsManager.getSmsManagerForSubscriptionId(11)).getLastSentTextMessageParams();
+        assertNotNull(sent);assertTrue(sent.getText().contains("See the booking website."));
+        assertFalse(sent.getText().contains("reschedule,"));assertFalse(sent.getText().contains("=>"));
+    }
 }

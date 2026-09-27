@@ -19,7 +19,7 @@ public class KeywordsActivity extends ProfileActivity {
         EditText editor = findViewById(R.id.keywordRulesEditor);
         EditText keywordsInput = findViewById(R.id.newKeywordsInput);
         EditText replyInput = findViewById(R.id.newReplyInput);
-        editor.setText(prefs.getString("chatbot_rules", getString(R.string.default_chatbot_rules)));
+        editor.setText(KeywordRules.normalize(prefs.getString("chatbot_rules", getString(R.string.default_chatbot_rules))));
 
         ((Button) findViewById(R.id.addKeywordRuleButton)).setOnClickListener(v -> {
             String keywords = keywordsInput.getText().toString().trim();
@@ -40,7 +40,7 @@ public class KeywordsActivity extends ProfileActivity {
         });
 
         ((Button) findViewById(R.id.saveKeywordsButton)).setOnClickListener(v -> {
-            prefs.edit().putString("chatbot_rules", editor.getText().toString().trim()).apply();
+            prefs.edit().putString("chatbot_rules", KeywordRules.normalize(editor.getText().toString().trim())).apply();
             Toast.makeText(this, "Keywords saved", Toast.LENGTH_SHORT).show();
         });
     }

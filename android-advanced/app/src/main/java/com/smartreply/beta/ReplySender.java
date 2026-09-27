@@ -35,6 +35,11 @@ public final class ReplySender {
         if (c.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
             AppCallLogStore.add(c,id,type,number,"Skipped: SMS permission missing"); return false;
         }
+        if (!"SCHEDULED".equals(type) && KeywordRules.containsRule(text)) {
+            Diagnostics.record(c,id,"SKIPPED","Keyword configuration was placed in an outgoing message field");
+            AppCallLogStore.add(c,id,type,number,"Skipped: keyword rules cannot be sent as a message");
+            return false;
+        }
         String token=null;
         try {
             SmsManager manager = SmsManager.getSmsManagerForSubscriptionId(id);

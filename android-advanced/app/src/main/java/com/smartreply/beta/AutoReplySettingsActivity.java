@@ -84,6 +84,18 @@ public class AutoReplySettingsActivity extends ProfileActivity {
                 smsReplyMessageInput.requestFocus();
                 return;
             }
+            if (KeywordRules.containsRule(plainSmsMessage)) {
+                plainSmsMessageInput.setError("These are keyword rules. Move them to Keywords & answers; this field sends one message.");
+                plainSmsMessageInput.requestFocus();return;
+            }
+            if (KeywordRules.containsRule(smsMessage)) {
+                smsReplyMessageInput.setError("These are keyword rules. Move them to Keywords & answers; enter one fallback message here.");
+                smsReplyMessageInput.requestFocus();return;
+            }
+            if (KeywordRules.containsRule(missedMessage)) {
+                missedCallMessageInput.setError("This field sends one message. Remove keyword rules.");
+                missedCallMessageInput.requestFocus();return;
+            }
             int[] values = {7, 14, 30};
             int retentionDays = values[Math.max(0, Math.min(retentionSpinner.getSelectedItemPosition(), 2))];
             prefs.edit()
