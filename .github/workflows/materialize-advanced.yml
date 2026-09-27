@@ -1,0 +1,38 @@
+name: Materialize ReplyDesk Advanced source
+
+on:
+  push:
+    branches:
+      - feature/replydesk-platform-foundation
+    paths:
+      - ".github/workflows/materialize-advanced.yml"
+      - "Smart-SMS-Reply-Advanced-Source.zip"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/replydesk-platform-foundation
+      - name: Extract Advanced source without modifying legacy files
+        run: |
+          rm -rf android-advanced
+          mkdir -p android-advanced
+          unzip -q Smart-SMS-Reply-Advanced-Source.zip -d /tmp/replydesk-advanced
+          cp -a /tmp/replydesk-advanced/smart-sms-auto-reply/. android-advanced/
+      - name: Commit materialized Advanced source
+        run: |
+          git config user.name "ReplyDesk Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add android-advanced
+          if git diff --cached --quiet; then
+            echo "No Advanced source changes"
+            exit 0
+          fi
+          git commit -m "Materialize Advanced ReplyDesk Android source"
+          git push origin HEAD:feature/replydesk-platform-foundation
