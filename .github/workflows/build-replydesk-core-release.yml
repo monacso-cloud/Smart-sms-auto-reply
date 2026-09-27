@@ -45,6 +45,10 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+      - name: Select the key matching the expected certificate
+        env:
+          STORE_PASSWORD: ${{ secrets.SMART_SMS_RELEASE_STORE_PASSWORD }}
+        run: java android-advanced/tools/SelectSigningAlias.java "$RUNNER_TEMP/replydesk-release.jks"
       - uses: android-actions/setup-android@v4
       - name: Install Android API 36
         run: sdkmanager "platforms;android-36" "build-tools;36.0.0"

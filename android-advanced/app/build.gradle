@@ -22,7 +22,7 @@ android {
             if (releaseKey && releaseStorePassword && releaseKeyPassword) {
                 storeFile file(releaseKey)
                 storePassword releaseStorePassword
-                keyAlias 'smart-sms-reply'
+                keyAlias System.getenv('SMART_SMS_RELEASE_ALIAS') ?: 'smart-sms-reply'
                 keyPassword releaseKeyPassword
                 v1SigningEnabled true
                 v2SigningEnabled true
