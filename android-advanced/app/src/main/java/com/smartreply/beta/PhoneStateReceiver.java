@@ -122,7 +122,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
     }
 
     private String appendNumberedMenu(String message, SharedPreferences prefs) {
-        if (!prefs.getBoolean("menu_enabled", false)) return message;
+        if (!prefs.getBoolean("menu_enabled", false)
+                || !prefs.getBoolean("missed_call_include_menu", prefs.getBoolean("menu_enabled", false))) return message;
 
         String intro = prefs.getString("menu_intro", "How can we help? Reply with a number:").trim();
         StringBuilder menu = new StringBuilder();

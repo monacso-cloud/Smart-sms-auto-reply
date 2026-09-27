@@ -59,10 +59,15 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         long last = prefs.getLong("chat_last_" + key, 0L);
         if (now - last < 30_000L) return;
 
-        String reply = findMenuReply(normalized, prefs);
-        if (reply == null) reply = findReply(normalized, prefs.getString("chatbot_rules", ""));
-        if (reply == null || reply.trim().isEmpty()) {
-            reply = prefs.getString("chatbot_fallback", context.getString(R.string.default_chatbot_fallback));
+        String reply;
+        if (prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false))) {
+            reply = findMenuReply(normalized, prefs);
+            if (reply == null) reply = findReply(normalized, prefs.getString("chatbot_rules", ""));
+            if (reply == null || reply.trim().isEmpty()) {
+                reply = prefs.getString("chatbot_fallback", context.getString(R.string.default_chatbot_fallback));
+            }
+        } else {
+            reply = prefs.getString("sms_reply_message", context.getString(R.string.default_plain_sms_reply));
         }
         if (reply == null || reply.trim().isEmpty()) return;
 

@@ -15,6 +15,53 @@
         android:text="Reply to missed calls"/>
     <Switch android:id="@+id/incomingSmsReplySwitch" android:layout_width="match_parent" android:layout_height="56dp"
         android:text="Reply to incoming SMS"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" android:text="Missed-call reply message" android:textSize="18sp"
+        android:textStyle="bold" android:textColor="#0B1F3A" android:labelFor="@+id/missedCallMessageInput"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp" android:text="Sent by SMS after a missed call. Turn off the menu option below to send only your message."
+        android:textSize="14sp" android:textColor="#526278"/>
+    <EditText android:id="@id/missedCallMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:minHeight="160dp" android:minLines="5"
+        android:gravity="top|start" android:inputType="textCapSentences|textMultiLine"
+        android:background="#FFFFFF" android:padding="16dp" android:textSize="16sp"
+        android:textColor="#0B1F3A" android:textColorHint="#526278"
+        android:hint="Type your missed-call reply here"/>
+    <Switch android:id="@+id/missedCallMenuSwitch" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="56dp" android:text="Add my numbered menu after the missed-call message"/>
+    <Switch android:id="@+id/smsChatbotModeSwitch" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="56dp" android:layout_marginTop="20dp" android:text="Use chatbot for incoming SMS"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="OFF: send your plain SMS reply. ON: use menu and keyword replies, with an unmatched-message reply."
+        android:textSize="14sp" android:textColor="#526278"/>
+    <LinearLayout android:id="@+id/plainSmsSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" android:text="Incoming SMS — automatic reply message" android:textSize="18sp"
+        android:textStyle="bold" android:textColor="#0B1F3A" android:labelFor="@+id/plainSmsMessageInput"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp" android:text="Send this same message after an incoming SMS. No chatbot, menu or keyword setup is needed. STOP and START still control opt-out."
+        android:textSize="14sp" android:textColor="#526278"/>
+    <EditText android:id="@id/plainSmsMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:minHeight="160dp" android:minLines="5"
+        android:gravity="top|start" android:inputType="textCapSentences|textMultiLine"
+        android:background="#FFFFFF" android:padding="16dp" android:textSize="16sp"
+        android:textColor="#0B1F3A" android:textColorHint="#526278"
+        android:hint="Example: Thanks for your message. I am with a client and will reply when available."/>
+    </LinearLayout>
+    <LinearLayout android:id="@+id/chatbotFallbackSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" android:text="Chatbot — unmatched-message reply" android:textSize="18sp"
+        android:textStyle="bold" android:textColor="#0B1F3A" android:labelFor="@+id/smsReplyMessageInput"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp" android:text="Sent when an incoming SMS does not match a menu number or keyword. Matching messages use your Menu &amp; Quick Replies or Keywords &amp; Replies instead. STOP and START keep their system replies."
+        android:textSize="14sp" android:textColor="#526278"/>
+    <EditText android:id="@id/smsReplyMessageInput" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:minHeight="160dp" android:minLines="5"
+        android:gravity="top|start" android:inputType="textCapSentences|textMultiLine"
+        android:background="#FFFFFF" android:padding="16dp" android:textSize="16sp"
+        android:textColor="#0B1F3A" android:textColorHint="#526278"
+        android:hint="Type your default SMS reply here"/>
+    </LinearLayout>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_marginTop="20dp" android:text="Keep ReplyDesk call logs" android:textStyle="bold"/>
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"

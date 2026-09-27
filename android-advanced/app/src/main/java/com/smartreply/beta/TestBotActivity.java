@@ -23,6 +23,19 @@ public class TestBotActivity extends Activity {
         ((Button) findViewById(R.id.runTestButton)).setOnClickListener(v -> {
             SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
             String incoming = input.getText().toString().trim().toLowerCase(Locale.ROOT);
+            if (incoming.equals("stop") || incoming.equals("unsubscribe")) {
+                result.setText("Opt-out command. Automatic replies will be stopped for this sender.");
+                return;
+            }
+            if (incoming.equals("start")) {
+                result.setText("Opt-in command. Automatic replies will be enabled for this sender.");
+                return;
+            }
+            if (!prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false))) {
+                result.setText("Plain SMS reply (no chatbot):\\n\\n" +
+                        prefs.getString("sms_reply_message", getString(R.string.default_plain_sms_reply)));
+                return;
+            }
             String menuReply = null;
             if (prefs.getBoolean("menu_enabled", false) && incoming.matches("(10|[1-9])")) {
                 String candidate = prefs.getString("menu_reply_" + incoming, "").trim();

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -16,12 +17,22 @@ public class AutoReplySettingsActivity extends Activity {
     private Switch smsSwitch;
     private Switch autoDeleteSwitch;
     private Spinner retentionSpinner;
+    private EditText missedCallMessageInput;
+    private EditText smsReplyMessageInput;
+    private EditText plainSmsMessageInput;
+    private Switch smsChatbotModeSwitch;
+    private Switch missedCallMenuSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_reply_settings);
 
+        plainSmsMessageInput = findViewById(R.id.plainSmsMessageInput);
+        smsChatbotModeSwitch = findViewById(R.id.smsChatbotModeSwitch);
+        missedCallMenuSwitch = findViewById(R.id.missedCallMenuSwitch);
+        missedCallMessageInput = findViewById(R.id.missedCallMessageInput);
+        smsReplyMessageInput = findViewById(R.id.smsReplyMessageInput);
         masterSwitch = findViewById(R.id.masterReplySwitch);
         missedSwitch = findViewById(R.id.missedCallReplySwitch);
         smsSwitch = findViewById(R.id.incomingSmsReplySwitch);
@@ -34,6 +45,13 @@ public class AutoReplySettingsActivity extends Activity {
         retentionSpinner.setAdapter(adapter);
 
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        plainSmsMessageInput.setText(prefs.getString("sms_reply_message", getString(R.string.default_plain_sms_reply)));
+        smsChatbotModeSwitch.setChecked(prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false)));
+        missedCallMenuSwitch.setChecked(prefs.getBoolean("missed_call_include_menu", prefs.getBoolean("menu_enabled", false)));
+        updateSmsMode();
+        smsChatbotModeSwitch.setOnCheckedChangeListener((button, checked) -> updateSmsMode());
+        missedCallMessageInput.setText(prefs.getString("message", getString(R.string.default_message)));
+        smsReplyMessageInput.setText(prefs.getString("chatbot_fallback", getString(R.string.default_chatbot_fallback)));
         masterSwitch.setChecked(prefs.contains("master_enabled")
                 ? prefs.getBoolean("master_enabled", false)
                 : prefs.getBoolean("enabled", false));
@@ -47,9 +65,34 @@ public class AutoReplySettingsActivity extends Activity {
         retentionSpinner.setSelection(days == 7 ? 0 : days == 30 ? 2 : 1);
 
         ((Button) findViewById(R.id.saveAutoReplyButton)).setOnClickListener(v -> {
+            String missedMessage = missedCallMessageInput.getText().toString().trim();
+            String plainSmsMessage = plainSmsMessageInput.getText().toString().trim();
+            String smsMessage = smsReplyMessageInput.getText().toString().trim();
+            if (missedSwitch.isChecked() && missedMessage.isEmpty()) {
+                missedCallMessageInput.setError("Enter the message to send after a missed call");
+                missedCallMessageInput.requestFocus();
+                return;
+            }
+            if (smsSwitch.isChecked() && !smsChatbotModeSwitch.isChecked() && plainSmsMessage.isEmpty()) {
+                plainSmsMessageInput.setError("Enter the message to send after an incoming SMS");
+                plainSmsMessageInput.requestFocus();
+                return;
+            }
+            if (smsSwitch.isChecked() && smsChatbotModeSwitch.isChecked() && smsMessage.isEmpty()) {
+                smsReplyMessageInput.setError("Enter the default SMS reply");
+                smsReplyMessageInput.requestFocus();
+                return;
+            }
             int[] values = {7, 14, 30};
             int retentionDays = values[Math.max(0, Math.min(retentionSpinner.getSelectedItemPosition(), 2))];
             prefs.edit()
+                    .putString("sms_reply_message", plainSmsMessage)
+                    .putBoolean("sms_chatbot_mode", smsChatbotModeSwitch.isChecked())
+                    .putBoolean("missed_call_include_menu", missedCallMenuSwitch.isChecked())
+                    .putString("message", missedMessage)
+                    .putString("chatbot_fallback", smsMessage)
+                    .putBoolean("enabled", masterSwitch.isChecked())
+                    .putBoolean("chatbot_enabled", smsSwitch.isChecked())
                     .putBoolean("master_enabled", masterSwitch.isChecked())
                     .putBoolean("reply_to_missed_calls", missedSwitch.isChecked())
                     .putBoolean("reply_to_incoming_sms", smsSwitch.isChecked())
@@ -59,5 +102,10 @@ public class AutoReplySettingsActivity extends Activity {
             AppCallLogStore.purge(this);
             Toast.makeText(this, "Auto reply settings saved", Toast.LENGTH_SHORT).show();
         });
+    }
+    private void updateSmsMode() {
+        boolean chatbot = smsChatbotModeSwitch.isChecked();
+        findViewById(R.id.plainSmsSection).setVisibility(chatbot ? android.view.View.GONE : android.view.View.VISIBLE);
+        findViewById(R.id.chatbotFallbackSection).setVisibility(chatbot ? android.view.View.VISIBLE : android.view.View.GONE);
     }
 }
