@@ -18,6 +18,11 @@ public class SelectSigningAlias {
             if (!store.isKeyEntry(alias) || store.getCertificate(alias) == null) continue;
             String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
                     .digest(store.getCertificate(alias).getEncoded()));
+            // Public certificate metadata only: never print key material or passwords.
+            System.out.println("Stored signing certificate SHA-256: " + digest);
+            if (store.getCertificate(alias) instanceof java.security.cert.X509Certificate certificate) {
+                System.out.println("Stored signing certificate subject: " + certificate.getSubjectX500Principal());
+            }
             if (expected.equals(digest)) {
                 if (selected != null) throw new IllegalStateException("Multiple keys match the expected certificate.");
                 selected = alias;
