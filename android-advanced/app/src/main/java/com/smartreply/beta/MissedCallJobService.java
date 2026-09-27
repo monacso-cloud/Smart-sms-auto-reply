@@ -106,8 +106,10 @@ public class MissedCallJobService extends JobService {
         if (ReplySender.send(this,id,number,message,"MISSED")) p.edit().putLong("last_reply_"+key,now).apply();
     }
     static String appendNumberedMenu(String message, SharedPreferences prefs) {
-        if (!prefs.getBoolean("menu_enabled", false)
-                || !prefs.getBoolean("missed_call_include_menu", prefs.getBoolean("menu_enabled", false))) return message;
+        return appendNumberedMenu(message,prefs,prefs.getBoolean("missed_call_include_menu",prefs.getBoolean("menu_enabled",false)));
+    }
+    static String appendNumberedMenu(String message,SharedPreferences prefs,boolean includeMenu) {
+        if (!prefs.getBoolean("menu_enabled", false) || !includeMenu) return message;
 
         String intro = prefs.getString("menu_intro", "How can we help? Reply with a number:").trim();
         StringBuilder menu = new StringBuilder();

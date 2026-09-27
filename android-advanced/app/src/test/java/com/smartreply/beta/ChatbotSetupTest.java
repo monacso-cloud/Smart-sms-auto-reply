@@ -66,25 +66,26 @@ public class ChatbotSetupTest {
         if(root instanceof ViewGroup){ViewGroup g=(ViewGroup)root;for(int i=0;i<g.getChildCount();i++){Button b=button(g.getChildAt(i),text);if(b!=null)return b;}}
         return null;
     }
+    private void idle(){shadowOf(android.os.Looper.getMainLooper()).idle();}
     @Test public void simpleEditorSavesCardAndPreviewDoesNotSendSms(){
-        KeywordsActivity a=screen();button(a.findViewById(android.R.id.content),"+ Add an answer").performClick();
+        KeywordsActivity a=screen();button(a.findViewById(android.R.id.content),"+ Add an answer").performClick();idle();
         AlertDialog dialog=(AlertDialog)ShadowDialog.getLatestDialog();
         ((EditText)dialog.findViewById(R.id.newKeywordsInput)).setText("available,availability");
         ((EditText)dialog.findViewById(R.id.newReplyInput)).setText("Please check our website.");
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();idle();
         assertEquals(1,BotSetup.read(p).size());assertEquals("Please check our website.",BotSetup.read(p).get(0).reply);
-        ((EditText)a.findViewById(R.id.testMessageInput)).setText("Are you available today?");a.findViewById(R.id.runTestButton).performClick();
+        ((EditText)a.findViewById(R.id.testMessageInput)).setText("Are you available today?");a.findViewById(R.id.runTestButton).performClick();idle();
         assertTrue(((TextView)a.findViewById(R.id.testBotResult)).getText().toString().contains("Please check our website."));
         assertNull(shadowOf(SmsManager.getSmsManagerForSubscriptionId(11)).getLastSentTextMessageParams());
         a.finish();assertEquals(1,BotSetup.read(p).size());
     }
     @Test public void organiseButtonRequiresConfirmationAndThenConvertsWrongField(){
         p.edit().putString("chatbot_fallback",PASTED).apply();KeywordsActivity a=screen();
-        button(a.findViewById(android.R.id.content),"Organise my saved answers").performClick();
+        button(a.findViewById(android.R.id.content),"Organise my saved answers").performClick();idle();
         assertTrue(BotSetup.needsRecovery(p));AlertDialog dialog=(AlertDialog)ShadowDialog.getLatestDialog();
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();assertTrue(BotSetup.needsRecovery(p));
-        button(a.findViewById(android.R.id.content),"Organise my saved answers").performClick();
-        dialog=(AlertDialog)ShadowDialog.getLatestDialog();dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();idle();assertTrue(BotSetup.needsRecovery(p));
+        button(a.findViewById(android.R.id.content),"Organise my saved answers").performClick();idle();
+        dialog=(AlertDialog)ShadowDialog.getLatestDialog();dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();idle();
         assertFalse(BotSetup.needsRecovery(p));assertEquals(8,BotSetup.read(p).size());a.finish();
     }
     @Test public void previewAndIncomingSmsUseSameCardAfterRecovery(){
@@ -103,8 +104,21 @@ public class ChatbotSetupTest {
         p.edit().putString("chatbot_fallback",PASTED).apply();
         AutoReplySettingsActivity a=Robolectric.buildActivity(AutoReplySettingsActivity.class,new Intent(app,AutoReplySettingsActivity.class).putExtra(BusinessProfiles.EXTRA,11)).setup().get();
         assertEquals(View.GONE,a.findViewById(R.id.smsReplyMessageInput).getVisibility());
-        a.findViewById(R.id.openChatbotSetupButton).performClick();
+        a.findViewById(R.id.openChatbotSetupButton).performClick();idle();
         assertEquals(KeywordsActivity.class.getName(),shadowOf(a).getNextStartedActivity().getComponent().getClassName());
         assertEquals(PASTED,p.getString("chatbot_fallback",""));a.finish();
+    }
+    @Test public void missedCallEditorSavesOnlyMissedCallSettings(){
+        p.edit().putString("chatbot_fallback","General reply").putString("chatbot_rules","available=>Website").apply();
+        MessageEditorActivity a=Robolectric.buildActivity(MessageEditorActivity.class,new Intent(app,MessageEditorActivity.class).putExtra(BusinessProfiles.EXTRA,11).putExtra("message_kind","missed")).setup().get();
+        ((EditText)a.findViewById(R.id.missedCallMessageInput)).setText("Sorry I missed your call.");
+        a.findViewById(R.id.saveAutoReplyButton).performClick();idle();
+        assertEquals("Sorry I missed your call.",p.getString("message",""));assertEquals("General reply",p.getString("chatbot_fallback",""));
+        assertEquals("available=>Website",p.getString("chatbot_rules",""));assertNull(a.findViewById(R.id.smsReplyMessageInput));a.finish();
+    }
+    @Test public void unmatchedQuestionUsesOnlyGeneralReply(){
+        p.edit().putBoolean("sms_chatbot_mode",true).putString("chatbot_rules","available=>Check website").putString("chatbot_fallback","Please leave your message.").apply();
+        assertEquals("Please leave your message.",BotReplies.choose(app,p,"Do you have parking?").text);
+        assertTrue(BotReplies.preview(app,p,"Do you have parking?",false).contains("Please leave your message."));
     }
 }

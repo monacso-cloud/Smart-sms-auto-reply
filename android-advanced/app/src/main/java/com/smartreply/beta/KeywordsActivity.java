@@ -45,6 +45,10 @@ public class KeywordsActivity extends ProfileActivity {
             if(question.getText().toString().trim().isEmpty()){question.setError("Type a customer question");return;}
             result.setText(BotReplies.preview(this,prefs,question.getText().toString(),true));
         });tryButton.setId(R.id.runTestButton);test.addView(result);
+        LinearLayout general=BasicUi.card(this,body);general.addView(BasicUi.text(this,"When no answer matches",20));
+        String fallback=prefs.getString("chatbot_fallback",getString(R.string.default_chatbot_fallback));
+        general.addView(BasicUi.text(this,KeywordRules.containsRule(fallback)?"Organise your saved answers above to replace the misplaced rules with a general reply.":fallback,16));
+        BasicUi.button(this,general,"Edit general reply",this::fallback);
         body.addView(BasicUi.text(this,"Your answers · "+rules.size(),22));
         if(rules.isEmpty())body.addView(BasicUi.text(this,"No answers yet. Add one or choose an example above.",15));
         else body.addView(BasicUi.text(this,"If several answers match, the first enabled card wins. Move specific questions above general ones.",14));
@@ -59,10 +63,6 @@ public class KeywordsActivity extends ProfileActivity {
             BasicUi.button(this,card,"Delete answer",()->new AlertDialog.Builder(this).setTitle("Delete this answer?").setMessage(r.keywords)
                 .setNegativeButton("Keep",null).setPositiveButton("Delete",(d,w)->{List<KeywordRules.Rule> next=new ArrayList<>(rules);next.remove(at);persist(next);}).show());
         }
-        LinearLayout general=BasicUi.card(this,body);general.addView(BasicUi.text(this,"When no answer matches",20));
-        String fallback=prefs.getString("chatbot_fallback",getString(R.string.default_chatbot_fallback));
-        general.addView(BasicUi.text(this,KeywordRules.containsRule(fallback)?"Organise your saved answers above to replace the misplaced rules with a general reply.":fallback,16));
-        BasicUi.button(this,general,"Edit general reply",this::fallback);
         body.addView(BasicUi.text(this,"ReplyDesk adds the automated-reply label and its name to outgoing replies. Changes are saved when you tap Save.",14));
     }
     private void persist(List<KeywordRules.Rule> next){try{BotSetup.save(prefs,next);render();}catch(RuntimeException e){BasicUi.error(this,e);}}

@@ -25,6 +25,7 @@
         <activity android:name=".TemplatesActivity" android:exported="false" />
         <activity android:name=".MainActivity" android:exported="false" />
         <activity android:name=".AutoReplySettingsActivity" android:exported="false" />
+        <activity android:name=".MessageEditorActivity" android:exported="false" />
         <activity android:name=".KeywordsActivity" android:exported="false" />
         <activity android:name=".MenuSettingsActivity" android:exported="false" />
         <activity android:name=".ScheduleActivity" android:exported="false" />

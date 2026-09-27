@@ -26,11 +26,11 @@ public class DashboardActivity extends ProfileActivity {
         boolean enabled=p.getBoolean("master_enabled",false), sms=p.getBoolean("reply_to_incoming_sms",p.getBoolean("chatbot_enabled",false));
         boolean bot=p.getBoolean("sms_chatbot_mode",p.getBoolean("chatbot_enabled",false));
         task(body,"Missed-call auto reply","Your message after an unanswered call",enabled&&p.getBoolean("reply_to_missed_calls",true),on->{
-            SharedPreferences.Editor e=p.edit().putBoolean("reply_to_missed_calls",on);if(on)e.putBoolean("master_enabled",true).putBoolean("enabled",true);e.apply();render();},AutoReplySettingsActivity.class);
+            SharedPreferences.Editor e=p.edit().putBoolean("reply_to_missed_calls",on);if(on)e.putBoolean("master_enabled",true).putBoolean("enabled",true);e.apply();render();},"Edit missed-call message",()->openMessage("missed"));
         task(body,"SMS auto reply","One saved message for incoming SMS",enabled&&sms&&!bot,on->{
-            SharedPreferences.Editor e=p.edit();if(on)e.putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true).putBoolean("sms_chatbot_mode",false);else if(!bot)e.putBoolean("reply_to_incoming_sms",false);e.apply();render();},AutoReplySettingsActivity.class);
+            SharedPreferences.Editor e=p.edit();if(on)e.putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true).putBoolean("sms_chatbot_mode",false);else if(!bot)e.putBoolean("reply_to_incoming_sms",false);e.apply();render();},"Edit plain SMS message",()->openMessage("plain"));
         task(body,"FAQ chatbot","Easy question-and-answer setup",enabled&&sms&&bot,on->{
-            SharedPreferences.Editor e=p.edit();if(on)e.putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true).putBoolean("sms_chatbot_mode",true);else if(bot)e.putBoolean("reply_to_incoming_sms",false);e.apply();render();},KeywordsActivity.class);
+            SharedPreferences.Editor e=p.edit();if(on)e.putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true).putBoolean("sms_chatbot_mode",true);else if(bot)e.putBoolean("reply_to_incoming_sms",false);e.apply();render();},"Set up answers",()->openProfile(KeywordsActivity.class));
         LinearLayout schedule=BasicUi.card(this,body);schedule.addView(BasicUi.text(this,"Scheduled SMS",22));
         schedule.addView(BasicUi.text(this,"Choose recipients, message, date and time",15));BasicUi.button(this,schedule,"Open scheduled messages",()->openProfile(ScheduledSmsActivity.class));
         BasicUi.button(this,body,"Menu & quick replies",()->openProfile(MenuSettingsActivity.class));
@@ -45,16 +45,18 @@ public class DashboardActivity extends ProfileActivity {
         }
         setContentView(root);
     }
+    private void openMessage(String kind){startActivity(new Intent(this,MessageEditorActivity.class).putExtra(BusinessProfiles.EXTRA,businessId).putExtra("message_kind",kind));}
     private void settings(){
-        new android.app.AlertDialog.Builder(this).setTitle("Business settings").setItems(new String[]{"Messages & reply modes","Delay & repeat protection","Reply days & hours","Permissions & diagnostics","Switch business"},(d,w)->{
-            if(w==0)openProfile(AutoReplySettingsActivity.class);if(w==1)openProfile(MainActivity.class);if(w==2)openProfile(ScheduleActivity.class);
-            if(w==3)startActivity(new Intent(this,DiagnosticsActivity.class));if(w==4)finish();
+        new android.app.AlertDialog.Builder(this).setTitle("Business settings").setItems(new String[]{"Missed-call message","Chatbot questions & answers","Plain SMS message","Reply days & hours","Permissions & diagnostics","More settings","Switch business"},(d,w)->{
+            if(w==0)openMessage("missed");if(w==1)openProfile(KeywordsActivity.class);if(w==2)openMessage("plain");
+            if(w==3)openProfile(ScheduleActivity.class);if(w==4)startActivity(new Intent(this,DiagnosticsActivity.class));
+            if(w==5)openProfile(AutoReplySettingsActivity.class);if(w==6)finish();
         }).show();
     }
     private interface Toggle{void set(boolean value);}
-    private void task(LinearLayout body,String name,String detail,boolean on,Toggle changed,Class<?> editor){
+    private void task(LinearLayout body,String name,String detail,boolean on,Toggle changed,String editLabel,Runnable edit){
         LinearLayout card=BasicUi.card(this,body);Switch toggle=new Switch(this);toggle.setText(name);toggle.setTextSize(20);toggle.setChecked(on);card.addView(toggle);
         card.addView(BasicUi.text(this,detail,15));toggle.setOnCheckedChangeListener((b,v)->changed.set(v));
-        BasicUi.button(this,card,editor==KeywordsActivity.class?"Set up answers":"Edit",()->openProfile(editor));
+        BasicUi.button(this,card,editLabel,edit);
     }
 }
