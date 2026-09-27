@@ -10,7 +10,7 @@ public class SelectSigningAlias {
         char[] password = System.getenv("STORE_PASSWORD").toCharArray();
         KeyStore store = KeyStore.getInstance(Path.of(args[0]).toFile(), password);
         java.util.Arrays.fill(password, '\0');
-        String expected = "b75a689cf031e3954fa9d8353366b8adf045a01bdaf4f6e5cf3ae9133a1af26b";
+        String expected = "7be4051ec5fbeddaa9808897706a1b793f423ed8f4dde50204d7da98208f6bcb";
         String selected = null;
         var aliases = store.aliases();
         while (aliases.hasMoreElements()) {

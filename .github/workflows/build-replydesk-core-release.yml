@@ -66,7 +66,7 @@ jobs:
         run: |
           apk="android-advanced/app/build/outputs/apk/release/app-release.apk"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$apk" > "$RUNNER_TEMP/replydesk-signer.txt"
-          grep -qi 'Signer #1 certificate SHA-256 digest: b75a689cf031e3954fa9d8353366b8adf045a01bdaf4f6e5cf3ae9133a1af26b' "$RUNNER_TEMP/replydesk-signer.txt"
+          grep -qi 'Signer #1 certificate SHA-256 digest: 7be4051ec5fbeddaa9808897706a1b793f423ed8f4dde50204d7da98208f6bcb' "$RUNNER_TEMP/replydesk-signer.txt"
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$apk" > "$RUNNER_TEMP/replydesk-package.txt"
           grep -q "package: name='com.smartreply.beta'" "$RUNNER_TEMP/replydesk-package.txt"
           if grep -q 'application-debuggable' "$RUNNER_TEMP/replydesk-package.txt"; then
