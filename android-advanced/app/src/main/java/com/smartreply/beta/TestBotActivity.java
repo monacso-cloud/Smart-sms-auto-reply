@@ -1,85 +1,15 @@
 package com.smartreply.beta;
-
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import java.util.Locale;
-
+import android.widget.*;
 public class TestBotActivity extends ProfileActivity {
-    private static final String PREFS = "smart_reply_settings";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test_bot);
-
-        EditText input = findViewById(R.id.testMessageInput);
-        TextView result = findViewById(R.id.testBotResult);
-
-        ((Button) findViewById(R.id.runTestButton)).setOnClickListener(v -> {
-            SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-            String incoming = input.getText().toString().trim().toLowerCase(Locale.ROOT);
-            if (incoming.equals("stop") || incoming.equals("unsubscribe")) {
-                result.setText("Opt-out command. Automatic replies will be stopped for this sender.");
-                return;
-            }
-            if (incoming.equals("start")) {
-                result.setText("Opt-in command. Automatic replies will be enabled for this sender.");
-                return;
-            }
-            if (!prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false))) {
-                result.setText("Plain SMS reply (no chatbot):\n\n" +
-                        prefs.getString("sms_reply_message", getString(R.string.default_plain_sms_reply)));
-                return;
-            }
-            String menuReply = null;
-            if (prefs.getBoolean("menu_enabled", false) && incoming.matches("(10|[1-9])")) {
-                String candidate = prefs.getString("menu_reply_" + incoming, "").trim();
-                if (!candidate.isEmpty()) menuReply = candidate;
-            }
-
-            if (menuReply != null) {
-                result.setText("Matched menu option: " + incoming + "\n\nReply:\n" + menuReply);
-                return;
-            }
-
-            Match match = findReply(incoming, prefs.getString("chatbot_rules", ""));
-            if (match == null) {
-                result.setText("No keyword matched.\n\nFallback reply:\n" +
-                        prefs.getString("chatbot_fallback", getString(R.string.default_chatbot_fallback)));
-            } else {
-                result.setText("Matched keyword: " + match.keyword + "\n\nReply:\n" + match.reply);
-            }
+    @Override protected void onCreate(Bundle state){
+        super.onCreate(state);setContentView(R.layout.activity_test_bot);
+        EditText input=findViewById(R.id.testMessageInput);TextView result=findViewById(R.id.testBotResult);
+        findViewById(R.id.runTestButton).setOnClickListener(v->{
+            if(input.getText().toString().trim().isEmpty()){input.setError("Type a customer question");return;}
+            SharedPreferences p=BusinessProfiles.prefs(this,businessId);
+            result.setText(BotReplies.preview(this,p,input.getText().toString(),false)+"\n\nReply schedule: "+ReplyPolicy.reason(p,"sms"));
         });
-    }
-
-    private Match findReply(String incoming, String rules) {
-        Match best = null;
-        for (String line : rules.split("\\r?\n")) {
-            int separator = line.indexOf("=>");
-            if (separator <= 0) continue;
-            String keywords = line.substring(0, separator);
-            String reply = line.substring(separator + 2).trim();
-            for (String keyword : keywords.split(",")) {
-                String clean = keyword.trim().toLowerCase(Locale.ROOT);
-                if (!clean.isEmpty() && incoming.contains(clean)) {
-                    return new Match(clean, reply);
-                }
-            }
-        }
-        return best;
-    }
-
-    private static final class Match {
-        final String keyword;
-        final String reply;
-        Match(String keyword, String reply) {
-            this.keyword = keyword;
-            this.reply = reply;
-        }
     }
 }

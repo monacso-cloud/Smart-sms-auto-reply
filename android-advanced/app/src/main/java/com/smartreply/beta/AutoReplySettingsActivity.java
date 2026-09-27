@@ -22,6 +22,7 @@ public class AutoReplySettingsActivity extends ProfileActivity {
     private EditText plainSmsMessageInput;
     private Switch smsChatbotModeSwitch;
     private Switch missedCallMenuSwitch;
+    private boolean refreshBotMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class AutoReplySettingsActivity extends ProfileActivity {
         missedSwitch = findViewById(R.id.missedCallReplySwitch);
         smsSwitch = findViewById(R.id.incomingSmsReplySwitch);
         autoDeleteSwitch = findViewById(R.id.autoDeleteLogsSwitch);
+        findViewById(R.id.openChatbotSetupButton).setOnClickListener(v -> openBotSetup());
         retentionSpinner = findViewById(R.id.retentionSpinner);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -84,13 +86,12 @@ public class AutoReplySettingsActivity extends ProfileActivity {
                 smsReplyMessageInput.requestFocus();
                 return;
             }
-            if (KeywordRules.containsRule(plainSmsMessage)) {
-                plainSmsMessageInput.setError("These are keyword rules. Move them to Keywords & answers; this field sends one message.");
-                plainSmsMessageInput.requestFocus();return;
-            }
-            if (KeywordRules.containsRule(smsMessage)) {
-                smsReplyMessageInput.setError("These are keyword rules. Move them to Keywords & answers; enter one fallback message here.");
-                smsReplyMessageInput.requestFocus();return;
+            if (KeywordRules.containsRule(plainSmsMessage) || KeywordRules.containsRule(smsMessage)) {
+                new android.app.AlertDialog.Builder(this).setTitle("Organise your saved answers")
+                    .setMessage("Your answers are safe. Chatbot setup can move them into separate cards for you.")
+                    .setNegativeButton("Keep editing",null)
+                    .setPositiveButton("Open chatbot setup",(d,w)->openBotSetup()).show();
+                return;
             }
             if (KeywordRules.containsRule(missedMessage)) {
                 missedCallMessageInput.setError("This field sends one message. Remove keyword rules.");
@@ -115,6 +116,32 @@ public class AutoReplySettingsActivity extends ProfileActivity {
             AppCallLogStore.purge(this);
             Toast.makeText(this, "Auto reply settings saved", Toast.LENGTH_SHORT).show();
         });
+    }
+    private void openBotSetup(){refreshBotMode=true;openProfile(KeywordsActivity.class);}
+    @Override protected void onResume(){
+        super.onResume();
+        if(smsReplyMessageInput==null)return;
+        SharedPreferences p=BusinessProfiles.prefs(this,businessId);
+        if(refreshBotMode){
+            masterSwitch.setChecked(p.getBoolean("master_enabled",false));
+            smsSwitch.setChecked(p.getBoolean("reply_to_incoming_sms",false));
+            smsChatbotModeSwitch.setChecked(p.getBoolean("sms_chatbot_mode",false));
+            refreshBotMode=false;
+        }
+        // Refresh only fields that were recovered while this screen was behind the setup screen.
+        if(KeywordRules.containsRule(smsReplyMessageInput.getText().toString()) && !KeywordRules.containsRule(p.getString("chatbot_fallback","")))
+            smsReplyMessageInput.setText(p.getString("chatbot_fallback",getString(R.string.default_chatbot_fallback)));
+        if(KeywordRules.containsRule(plainSmsMessageInput.getText().toString()) && !KeywordRules.containsRule(p.getString("sms_reply_message","")))
+            plainSmsMessageInput.setText(p.getString("sms_reply_message",getString(R.string.default_plain_sms_reply)));
+        refreshSetupHint();
+    }
+    private void refreshSetupHint(){
+        boolean wrong=KeywordRules.containsRule(smsReplyMessageInput.getText().toString()) || KeywordRules.containsRule(plainSmsMessageInput.getText().toString());
+        ((android.widget.TextView)findViewById(R.id.chatbotSetupHint)).setText(wrong
+            ? "Your saved answers need organising. Tap below to move them into answer cards without copying text."
+            : "Set up your chatbot with simple question-and-answer cards and try a customer question.");
+        smsReplyMessageInput.setVisibility(KeywordRules.containsRule(smsReplyMessageInput.getText().toString())?android.view.View.GONE:android.view.View.VISIBLE);
+        plainSmsMessageInput.setVisibility(KeywordRules.containsRule(plainSmsMessageInput.getText().toString())?android.view.View.GONE:android.view.View.VISIBLE);
     }
     private void updateSmsMode() {
         boolean chatbot = smsChatbotModeSwitch.isChecked();

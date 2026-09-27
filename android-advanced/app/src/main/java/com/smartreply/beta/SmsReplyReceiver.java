@@ -78,22 +78,7 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         long last = prefs.getLong("chat_last_" + key, 0L);
         if (now - last < 30_000L) { skip(context,subscriptionId,sender,"30-second repeat protection"); return; }
 
-        String reply;
-        if (prefs.getBoolean("sms_chatbot_mode", prefs.getBoolean("chatbot_enabled", false))) {
-            reply = findMenuReply(normalized, prefs);
-            if (reply == null) reply = KeywordRules.find(normalized, prefs.getString("chatbot_rules", ""));
-            String fallback=prefs.getString("chatbot_fallback", context.getString(R.string.default_chatbot_fallback));
-            if (reply == null && KeywordRules.containsRule(fallback)) reply=KeywordRules.find(normalized, fallback);
-            if (reply == null || reply.trim().isEmpty()) {
-                reply = KeywordRules.containsRule(fallback) ? context.getString(R.string.default_chatbot_fallback) : fallback;
-            }
-        } else {
-            String plain=prefs.getString("sms_reply_message", context.getString(R.string.default_plain_sms_reply));
-            reply=KeywordRules.containsRule(plain) ? KeywordRules.find(normalized, plain) : plain;
-            if(reply==null && KeywordRules.containsRule(plain)) {
-                skip(context,subscriptionId,sender,"Keyword rules are in the plain SMS field; move them to Keywords & answers");return;
-            }
-        }
+        String reply=BotReplies.choose(context,prefs,normalized).text;
         if (reply == null || reply.trim().isEmpty() || KeywordRules.containsRule(reply)) { skip(context,subscriptionId,sender,"Reply text is empty or contains keyword configuration; nothing sent"); return; }
 
         if (!ReplySender.send(context, subscriptionId, sender, reply.trim(), "SMS")) return;
@@ -108,11 +93,4 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         Diagnostics.record(c,id,"SKIPPED",reason);
         AppCallLogStore.add(c,id,"SMS",number,"Skipped: "+reason);
     }
-    private String findMenuReply(String incoming, SharedPreferences prefs) {
-        if (!prefs.getBoolean("menu_enabled", false)) return null;
-        if (!incoming.matches("(10|[1-9])")) return null;
-        String reply = prefs.getString("menu_reply_" + incoming, "").trim();
-        return reply.isEmpty() ? null : reply;
-    }
-
 }

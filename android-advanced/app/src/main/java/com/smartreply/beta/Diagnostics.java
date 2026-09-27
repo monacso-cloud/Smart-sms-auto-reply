@@ -20,7 +20,7 @@ public final class Diagnostics {
         p.edit().putString("diagnostic_events",next.toString()).putLong("event_"+stage,System.currentTimeMillis()).apply();
     }
     public static String report(Context c) {
-        StringBuilder s=new StringBuilder("ReplyDesk 0.6.0\nAndroid "+android.os.Build.VERSION.RELEASE+" · "+android.os.Build.MODEL+"\n");
+        StringBuilder s=new StringBuilder("ReplyDesk 0.6.2\nAndroid "+android.os.Build.VERSION.RELEASE+" · "+android.os.Build.MODEL+"\n");
         for(String permission:new String[]{android.Manifest.permission.READ_PHONE_STATE,android.Manifest.permission.READ_CALL_LOG,
                 android.Manifest.permission.RECEIVE_SMS,android.Manifest.permission.SEND_SMS})
             s.append(permission.substring(permission.lastIndexOf('.')+1)).append(": ")

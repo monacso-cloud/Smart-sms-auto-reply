@@ -29,7 +29,7 @@ public class DashboardActivity extends ProfileActivity {
             SharedPreferences.Editor e=p.edit().putBoolean("reply_to_missed_calls",on);if(on)e.putBoolean("master_enabled",true).putBoolean("enabled",true);e.apply();render();},AutoReplySettingsActivity.class);
         task(body,"SMS auto reply","One saved message for incoming SMS",enabled&&sms&&!bot,on->{
             SharedPreferences.Editor e=p.edit();if(on)e.putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true).putBoolean("sms_chatbot_mode",false);else if(!bot)e.putBoolean("reply_to_incoming_sms",false);e.apply();render();},AutoReplySettingsActivity.class);
-        task(body,"FAQ chatbot","Keyword answers and numbered menus",enabled&&sms&&bot,on->{
+        task(body,"FAQ chatbot","Easy question-and-answer setup",enabled&&sms&&bot,on->{
             SharedPreferences.Editor e=p.edit();if(on)e.putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true).putBoolean("sms_chatbot_mode",true);else if(bot)e.putBoolean("reply_to_incoming_sms",false);e.apply();render();},KeywordsActivity.class);
         LinearLayout schedule=BasicUi.card(this,body);schedule.addView(BasicUi.text(this,"Scheduled SMS",22));
         schedule.addView(BasicUi.text(this,"Choose recipients, message, date and time",15));BasicUi.button(this,schedule,"Open scheduled messages",()->openProfile(ScheduledSmsActivity.class));
@@ -55,6 +55,6 @@ public class DashboardActivity extends ProfileActivity {
     private void task(LinearLayout body,String name,String detail,boolean on,Toggle changed,Class<?> editor){
         LinearLayout card=BasicUi.card(this,body);Switch toggle=new Switch(this);toggle.setText(name);toggle.setTextSize(20);toggle.setChecked(on);card.addView(toggle);
         card.addView(BasicUi.text(this,detail,15));toggle.setOnCheckedChangeListener((b,v)->changed.set(v));
-        BasicUi.button(this,card,"Edit",()->openProfile(editor));
+        BasicUi.button(this,card,editor==KeywordsActivity.class?"Set up answers":"Edit",()->openProfile(editor));
     }
 }
