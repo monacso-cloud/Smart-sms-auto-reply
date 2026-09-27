@@ -1,12 +1,13 @@
 package com.smartreply.beta;
 import android.app.Activity;
 import android.content.*;
+import android.telephony.SmsManager;
 public class SmsSentReceiver extends BroadcastReceiver {
-    @Override public void onReceive(Context c, Intent i) {
-        int id=i.getIntExtra(BusinessProfiles.EXTRA,-1);
-        if (!BusinessProfiles.exists(c,id)) return;
-        String status = getResultCode()==Activity.RESULT_OK ? "Sent (delivery not confirmed)" : "SMS failed: code " + getResultCode();
-        AppCallLogStore.add(c,id,i.getStringExtra("type"),i.getStringExtra("number"),
-            status + " · part " + i.getIntExtra("part",1) + "/" + i.getIntExtra("parts",1));
+    @Override public void onReceive(Context c,Intent i){
+        int code=getResultCode();
+        String reason=code==SmsManager.RESULT_ERROR_NO_SERVICE ? "No mobile service" :
+            code==SmsManager.RESULT_ERROR_RADIO_OFF ? "Mobile radio is off" :
+            code==SmsManager.RESULT_ERROR_LIMIT_EXCEEDED ? "Android SMS sending limit reached" : "Android error code "+code;
+        DeliveryTracker.result(c,i.getStringExtra("delivery_token"),i.getIntExtra("part",0),code==Activity.RESULT_OK,reason);
     }
 }

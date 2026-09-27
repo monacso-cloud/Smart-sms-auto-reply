@@ -75,10 +75,7 @@ public class BusinessListActivity extends Activity {
                 if (checkSelfPermission(permission)!=PackageManager.PERMISSION_GRANTED) missing.add(permission);
             if (missing.isEmpty()) render(); else requestPermissions(missing.toArray(new String[0]),100);
         });
-        button("Routing diagnostics",body,() -> {
-            String detail = BusinessProfiles.index(this).getString("last_routing_issue","No routing issues recorded.");
-            new AlertDialog.Builder(this).setTitle("Routing diagnostics").setMessage(detail).setPositiveButton("OK",null).show();
-        });
+        button("Permissions & diagnostics",body,() -> startActivity(new Intent(this,DiagnosticsActivity.class)));
         body.addView(text("Saved eSIMs can outnumber active lines. Enable a line in Android settings to use it. A newly issued SIM needs its own profile.",14));
     }
     @Override public void onRequestPermissionsResult(int code,String[] permissions,int[] results) {

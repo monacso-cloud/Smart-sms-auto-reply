@@ -29,7 +29,9 @@ public final class BusinessProfiles {
                 .putLong("created_at", System.currentTimeMillis())
                 .putBoolean("master_enabled", false).putInt("delay_seconds", 0).apply();
         }
-        p.edit().putString("sim_label", SimRouter.label(info)).apply();
+        SharedPreferences.Editor meta=p.edit().putString("sim_label", SimRouter.label(info));
+        if(info.getCountryIso()!=null && !info.getCountryIso().isEmpty()) meta.putString("country_iso",info.getCountryIso());
+        meta.apply();
         Set<String> ids = ids(c); ids.add(String.valueOf(id));
         index(c).edit().putStringSet("ids", ids).apply();
     }

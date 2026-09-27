@@ -17,7 +17,8 @@ public class MissedCallJobService extends JobService {
         JobInfo job = new JobInfo.Builder(retry ? 401 : 400,new ComponentName(c,MissedCallJobService.class))
             .setMinimumLatency(retry ? 5000 : 1800).setOverrideDeadline(retry ? 10000 : 5000).setExtras(extras).build();
         JobScheduler scheduler=c.getSystemService(JobScheduler.class);
-        if (scheduler != null) scheduler.schedule(job);
+        if (scheduler != null && scheduler.schedule(job)!=JobScheduler.RESULT_SUCCESS)
+            Diagnostics.record(c,-1,"SKIPPED","Android rejected missed-call background job");
     }
     @Override public boolean onStartJob(JobParameters params) {
         WORKER.execute(() -> {
@@ -33,7 +34,10 @@ public class MissedCallJobService extends JobService {
     }
     @Override public boolean onStopJob(JobParameters p) { return false; }
     private void scan() {
-        if (checkSelfPermission(Manifest.permission.READ_CALL_LOG)!=PackageManager.PERMISSION_GRANTED) return;
+        Diagnostics.record(this,-1,"CALL_SCAN","Checking recent missed calls");
+        if (checkSelfPermission(Manifest.permission.READ_CALL_LOG)!=PackageManager.PERMISSION_GRANTED) {
+            Diagnostics.record(this,-1,"SKIPPED","READ_CALL_LOG permission missing"); return;
+        }
         long cutoff=System.currentTimeMillis()-5*60_000L;
         try (Cursor rows=getContentResolver().query(CallLog.Calls.CONTENT_URI,
             new String[]{CallLog.Calls._ID,CallLog.Calls.NUMBER,CallLog.Calls.DATE,
@@ -53,6 +57,7 @@ public class MissedCallJobService extends JobService {
                 }
                 SharedPreferences p=BusinessProfiles.prefs(this,id);
                 if (date<p.getLong("created_at",0) || !ReplyPolicy.shouldReply(p,"missed_call")) {
+                    Diagnostics.record(this,id,"SKIPPED",date<p.getLong("created_at",0) ? "Call predates business profile" : ReplyPolicy.reason(p,"missed_call"));
                     index.edit().putLong(event,date).apply(); continue;
                 }
                 PersistableBundle extras=new PersistableBundle();
@@ -91,7 +96,9 @@ public class MissedCallJobService extends JobService {
         }
         if (number==null || number.trim().isEmpty() || number.startsWith("-")) return;
         String key=Integer.toHexString(number.hashCode());
-        if (p.getBoolean("chat_opt_out_"+key,false)) return;
+        if (p.getBoolean("chat_opt_out_"+key,false) || p.getBoolean("chat_opt_out_"+Integer.toHexString(RecipientRules.normal(p,number).hashCode()),false)) { Diagnostics.record(this,id,"SKIPPED","Caller opted out"); return; }
+        String filter=RecipientRules.reason(p,number);
+        if(!"Ready".equals(filter)) { Diagnostics.record(this,id,"SKIPPED",filter); AppCallLogStore.add(this,id,"MISSED",number,"Skipped: "+filter); return; }
         long now=System.currentTimeMillis();
         long last=p.getLong("last_reply_"+key,0);
         if (now-last<Math.max(0,p.getInt("repeat_minutes",0))*60_000L) return;

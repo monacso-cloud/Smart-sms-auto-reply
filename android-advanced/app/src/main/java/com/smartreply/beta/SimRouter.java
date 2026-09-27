@@ -26,7 +26,7 @@ public final class SimRouter {
     }
     public static String label(SubscriptionInfo s) {
         String kind = Build.VERSION.SDK_INT >= 28 && s.isEmbedded() ? "eSIM" : "SIM";
-        return kind + " " + (s.getSimSlotIndex() + 1) + " — " + s.getDisplayName() + " (#" + s.getSubscriptionId() + ")";
+        return kind + " " + (s.getSimSlotIndex() + 1) + " — " + s.getDisplayName();
     }
     public static int smsSubscription(Bundle extras) {
         if (extras == null) return -1;
@@ -42,6 +42,23 @@ public final class SimRouter {
             found = (int)n;
         }
         return found;
+    }
+    public static int smsSubscription(Context c,Bundle extras) {
+        int id=smsSubscription(extras);
+        if(id>=0 || extras==null || extras.containsKey("subscription")
+                || extras.containsKey("android.telephony.extra.SUBSCRIPTION_INDEX")) return id;
+        Object raw=extras.containsKey("android.telephony.extra.SLOT_INDEX")
+            ? extras.get("android.telephony.extra.SLOT_INDEX") : extras.get("slot");
+        if(!(raw instanceof Number)) return -1;
+        long value=((Number)raw).longValue();
+        if(value<0 || value>Integer.MAX_VALUE)return -1;
+        int slot=(int)value, match=-1;
+        if(slot<0) return -1;
+        for(SubscriptionInfo info:active(c)) if(info.getSimSlotIndex()==slot) {
+            if(match>=0) return -1;
+            match=info.getSubscriptionId();
+        }
+        return match;
     }
     public static int callSubscription(Context c, String component, String account) {
         if (Build.VERSION.SDK_INT < 30 || component == null || account == null || account.isEmpty()) return -1;
