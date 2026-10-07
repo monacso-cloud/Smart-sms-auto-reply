@@ -1,0 +1,51 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.smartreply.beta'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.smartreply.beta'
+        minSdk 26
+        targetSdk 36
+        versionCode 8
+        versionName '0.6.2-easy-chatbot'
+    }
+
+    signingConfigs {
+        release {
+            def releaseKey = System.getenv('SMART_SMS_RELEASE_KEYSTORE')
+            def releaseStorePassword = System.getenv('SMART_SMS_RELEASE_STORE_PASSWORD')
+            def releaseKeyPassword = System.getenv('SMART_SMS_RELEASE_KEY_PASSWORD')
+            if (releaseKey && releaseStorePassword && releaseKeyPassword) {
+                storeFile file(releaseKey)
+                storePassword releaseStorePassword
+                keyAlias System.getenv('SMART_SMS_RELEASE_ALIAS') ?: 'smart-sms-reply'
+                keyPassword releaseKeyPassword
+                v1SigningEnabled true
+                v2SigningEnabled true
+            }
+        }
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.all { testLogging { events "passed", "skipped", "failed"; exceptionFormat "full" } }
+    }
+
+    buildTypes {
+        release {
+            debuggable false
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.robolectric:robolectric:4.14.1"
+}

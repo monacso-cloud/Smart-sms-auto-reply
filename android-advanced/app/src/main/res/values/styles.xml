@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">#087F83</item>
+        <item name="android:colorControlActivated">#087F83</item>
+        <item name="android:navigationBarColor">#F4F7FB</item>
+        <item name="android:statusBarColor">#F4F7FB</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">#F4F7FB</item>
+        <item name="android:textColorPrimary">#102D4D</item>
+        <item name="android:textColorSecondary">#53677F</item>
+        <item name="android:buttonStyle">@style/ReplyDeskButton</item>
+        <item name="android:editTextStyle">@style/ReplyDeskInput</item>
+    </style>
+    <style name="ReplyDeskButton" parent="android:style/Widget.Material.Button">
+        <item name="android:background">@drawable/rd_button</item>
+        <item name="android:backgroundTint">@null</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+    <style name="ReplyDeskTile" parent="ReplyDeskButton">
+        <item name="android:background">@drawable/rd_tile</item>
+        <item name="android:textColor">#163D66</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:padding">18dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="ReplyDeskInput" parent="android:style/Widget.Material.EditText">
+        <item name="android:background">@drawable/rd_field</item>
+        <item name="android:backgroundTint">@null</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textColor">#102D4D</item>
+        <item name="android:textColorHint">#657990</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+</resources>
