@@ -14,10 +14,10 @@ permissions:
 
 jobs:
   build-signed:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check signing configuration
         env:
           KEYSTORE_B64: ${{ secrets.SMART_SMS_RELEASE_KEYSTORE_B64 }}
@@ -41,7 +41,7 @@ jobs:
           test "$missing" -eq 0
           umask 077
           printf '%s' "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/replydesk-release.jks"
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
@@ -52,7 +52,7 @@ jobs:
       - uses: android-actions/setup-android@v4
       - name: Install Android API 36
         run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: "8.9"
       - name: Build signed APK
@@ -73,7 +73,7 @@ jobs:
             echo "::error::Release APK must not be debuggable."
             exit 1
           fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ReplyDesk-Core-Signed-Candidate
           path: android-advanced/app/build/outputs/apk/release/app-release.apk
