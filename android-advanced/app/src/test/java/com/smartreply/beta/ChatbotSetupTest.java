@@ -163,7 +163,8 @@ public class ChatbotSetupTest {
     }
     @Test public void fallbackNeverRepeatsAfterCooldownAndRestartedReceiver(){
         p.edit().putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true)
-            .putBoolean("sms_chatbot_mode",true).putBoolean("fallback_enabled",true).commit();
+            .putBoolean("sms_chatbot_mode",true).putBoolean("fallback_enabled",true)
+            .putString("chatbot_fallback","Approved general reply").commit();
         new SmsReplyReceiver().handleMessage(app,11,"+61400000000","Unmatched");
         ShadowSmsManager manager=shadowOf(SmsManager.getSmsManagerForSubscriptionId(11));
         assertNotNull(manager.getLastSentTextMessageParams());manager.clearLastSentTextMessageParams();
