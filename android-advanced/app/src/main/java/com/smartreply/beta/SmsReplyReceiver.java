@@ -60,15 +60,23 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         String normalized = body.trim().toLowerCase(Locale.ROOT);
         if (normalized.equals("stop") || normalized.equals("unsubscribe")) {
             prefs.edit().putBoolean("chat_opt_out_" + key, true).putBoolean("chat_opt_out_"+normalizedKey,true).apply();
-            if (ReplyPolicy.shouldReply(prefs, "sms")) ReplySender.send(context, subscriptionId, sender, "You have been unsubscribed from automatic SMS replies. Text START to enable them again.", "SMS");
+            if (!ConversationPolicy.paused(prefs,sender) && ReplyPolicy.shouldReply(prefs, "sms")) ReplySender.send(context, subscriptionId, sender, "You have been unsubscribed from automatic SMS replies. Text START to enable them again.", "SMS");
+            return;
+        }
+        if (normalized.equals("human")) {
+            try { ConversationPolicy.setPaused(prefs,sender,true); }
+            catch(RuntimeException e){skip(context,subscriptionId,sender,"Unable to persist human handoff");}
             return;
         }
         if (normalized.equals("start")) {
+            try { ConversationPolicy.setPaused(prefs,sender,false); }
+            catch(RuntimeException e){skip(context,subscriptionId,sender,"Unable to resume automation");return;}
             prefs.edit().remove("chat_opt_out_" + key).remove("chat_opt_out_"+normalizedKey).apply();
-            if (ReplyPolicy.shouldReply(prefs, "sms")) ReplySender.send(context, subscriptionId, sender, "Automatic SMS replies are active again. How can we help?", "SMS");
+            if (!ConversationPolicy.paused(prefs,sender) && ReplyPolicy.shouldReply(prefs, "sms")) ReplySender.send(context, subscriptionId, sender, "Automatic SMS replies are active again. How can we help?", "SMS");
             return;
         }
         if (prefs.getBoolean("chat_opt_out_" + key, false) || prefs.getBoolean("chat_opt_out_"+normalizedKey,false)) { skip(context,subscriptionId,sender,"Sender opted out with STOP"); return; }
+        if(ConversationPolicy.paused(prefs,sender)){skip(context,subscriptionId,sender,"Human takeover active");return;}
         String policy=ReplyPolicy.reason(prefs,"sms");
         if (!"Ready".equals(policy)) { skip(context,subscriptionId,sender,policy); return; }
         String filter=RecipientRules.reason(prefs,sender);
@@ -78,7 +86,11 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         long last = prefs.getLong("chat_last_" + key, 0L);
         if (now - last < 30_000L) { skip(context,subscriptionId,sender,"30-second repeat protection"); return; }
 
-        String reply=BotReplies.choose(context,prefs,normalized).text;
+        BotReplies.Answer answer=BotReplies.choose(context,prefs,normalized);
+        String reply=answer.text;
+        if(answer.fallback && (!prefs.getBoolean("fallback_enabled",false) || !ConversationPolicy.claimFallback(prefs,sender))){
+            skip(context,subscriptionId,sender,"General reply off or already used for this conversation");return;
+        }
         if (reply == null || reply.trim().isEmpty() || KeywordRules.containsRule(reply)) { skip(context,subscriptionId,sender,"Reply text is empty or contains keyword configuration; nothing sent"); return; }
 
         if (!ReplySender.send(context, subscriptionId, sender, reply.trim(), "SMS")) return;

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.*;
 import android.os.Bundle;
 import android.widget.*;
+import android.view.WindowManager;
 import java.util.*;
 
 /** Simple per-business answer cards. Raw rule syntax is confined to legacy recovery. */
@@ -48,7 +49,15 @@ public class KeywordsActivity extends ProfileActivity {
         LinearLayout general=BasicUi.card(this,body);general.addView(BasicUi.text(this,"When no answer matches",20));
         String fallback=prefs.getString("chatbot_fallback",getString(R.string.default_chatbot_fallback));
         general.addView(BasicUi.text(this,KeywordRules.containsRule(fallback)?"Organise your saved answers above to replace the misplaced rules with a general reply.":fallback,16));
+        Switch fallbackEnabled=new Switch(this);fallbackEnabled.setText("Send general reply when no answer matches");
+        fallbackEnabled.setChecked(prefs.getBoolean("fallback_enabled",false));general.addView(fallbackEnabled);
+        fallbackEnabled.setOnCheckedChangeListener((v,on)->{if(!prefs.edit().putBoolean("fallback_enabled",on).commit()){BasicUi.error(this,new Exception("Could not save"));render();}});
+        general.addView(BasicUi.text(this,"Off by default. When enabled, sends once per sender until you resume automation for that sender.",14));
         BasicUi.button(this,general,"Edit general reply",this::fallback);
+        Switch takeover=new Switch(this);takeover.setText("I am replying myself — pause incoming SMS automation");
+        takeover.setChecked(prefs.getBoolean("human_takeover",false));general.addView(takeover);
+        takeover.setOnCheckedChangeListener((v,on)->{if(!prefs.edit().putBoolean("human_takeover",on).commit()){BasicUi.error(this,new Exception("Could not save"));render();}});
+        BasicUi.button(this,general,"Pause or resume one customer",this::customerControl);
         body.addView(BasicUi.text(this,"Your answers · "+rules.size(),22));
         if(rules.isEmpty())body.addView(BasicUi.text(this,"No answers yet. Add one or choose an example above.",15));
         else body.addView(BasicUi.text(this,"If several answers match, the first enabled card wins. Move specific questions above general ones.",14));
@@ -72,7 +81,7 @@ public class KeywordsActivity extends ProfileActivity {
         EditText words=BasicUi.input(this,form,"Words or phrases customers may use",keys,true);words.setId(R.id.newKeywordsInput);words.setHint("available, availability, any cancellation, free today");
         form.addView(BasicUi.text(this,"Separate alternatives with commas. The bot matches these words anywhere in a message.",14));
         EditText reply=BasicUi.input(this,form,"Your answer",answer,true);reply.setId(R.id.newReplyInput);reply.setMinLines(5);reply.setHint("Write the message your customer should receive.");
-        AlertDialog dialog=new AlertDialog.Builder(this).setTitle(at<0?"Add an answer":"Edit answer").setView(scroll(form)).setNegativeButton("Cancel",null).setPositiveButton("Save",null).create();
+        AlertDialog dialog=new AlertDialog.Builder(this).setTitle(at<0?"Add an answer":"Edit answer").setView(scroll(form)).setNegativeButton("Cancel",null).setPositiveButton(at<0?"Save":"Save Changes",null).create();
         dialog.setOnShowListener(v->dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(button->{
             String k=words.getText().toString().trim().replaceAll("[\\r\\n]+",",");String text=reply.getText().toString().trim();
             if(k.replace(",","").trim().isEmpty()){words.setError("Add a word or phrase");return;}
@@ -81,7 +90,31 @@ public class KeywordsActivity extends ProfileActivity {
             List<KeywordRules.Rule> next=new ArrayList<>(rules);KeywordRules.Rule rule=new KeywordRules.Rule(k,text,at<0||rules.get(at).enabled);
             if(at<0)next.add(rule);else next.set(at,rule);
             try{BotSetup.save(prefs,next);dialog.dismiss();render();}catch(RuntimeException e){BasicUi.error(this,e);}
-        }));dialog.show();
+        }));showEditor(dialog);
+    }
+    private void showEditor(AlertDialog dialog){
+        dialog.show();
+        // Buttons remain outside the scrolling fields; resize above the keyboard.
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        dialog.getWindow().setLayout(-1,(int)(getResources().getDisplayMetrics().heightPixels*0.85f));
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(0xff16354d);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(0xff16354d);
+    }
+    private void customerControl(){
+        LinearLayout form=BasicUi.column(this);
+        EditText number=BasicUi.input(this,form,"Customer phone number (include country code)","",false);
+        form.addView(BasicUi.text(this,"Pause stops all incoming SMS replies for this customer on this business SIM. Resume allows replies and resets the one-time general reply. STOP remains respected.",14));
+        AlertDialog dialog=new AlertDialog.Builder(this).setTitle("Customer automation").setView(scroll(form))
+            .setNegativeButton("Cancel",null).setNeutralButton("Pause",null).setPositiveButton("Resume",null).create();
+        dialog.setOnShowListener(v->{
+            for(int which:new int[]{AlertDialog.BUTTON_NEUTRAL,AlertDialog.BUTTON_POSITIVE})
+                dialog.getButton(which).setOnClickListener(button->{try{
+                    java.util.List<String> values=RecipientRules.numbers(prefs,number.getText().toString());
+                    if(values.size()!=1)throw new IllegalArgumentException("Enter one customer phone number");
+                    ConversationPolicy.setPaused(prefs,values.get(0),which==AlertDialog.BUTTON_NEUTRAL);
+                    dialog.dismiss();
+                }catch(RuntimeException e){number.setError(e.getMessage());}});
+        });showEditor(dialog);
     }
     private void example(){
         String[] names={"Availability / openings","Reschedule an appointment","Cancel an appointment","Prices","Opening hours","Location","Talk to staff","Book an appointment"};
@@ -102,7 +135,7 @@ public class KeywordsActivity extends ProfileActivity {
             String value=input.getText().toString().trim();if(value.isEmpty()||KeywordRules.containsRule(value)){input.setError("Write one reply message. Use Add an answer for questions and answers.");return;}
             if(!prefs.edit().putString("chatbot_fallback",value).commit()){BasicUi.error(this,new Exception("Could not save"));return;}
             dialog.dismiss();render();
-        }));dialog.show();
+        }));showEditor(dialog);
     }
     private void recover(){
         try{
