@@ -8,7 +8,9 @@ final class BotReplies {
     private BotReplies(){}
     static final class Answer {
         final String text,source;
-        Answer(String text,String source){this.text=text;this.source=source;}
+        final boolean fallback;
+        Answer(String text,String source){this(text,source,false);}
+        Answer(String text,String source,boolean fallback){this.text=text;this.source=source;this.fallback=fallback;}
     }
     static Answer safe(String text,String source){return new Answer(KeywordRules.containsRule(text)?null:text,source);}
     static Answer chatbot(Context c,SharedPreferences p,String message){
@@ -24,7 +26,8 @@ final class BotReplies {
             if(reply!=null)return safe(reply,"Matched an answer waiting to be organised");
             fallback=c.getString(R.string.default_chatbot_fallback);
         }
-        return safe(fallback,"No match — general reply");
+        if(!p.getBoolean("fallback_enabled",false))return new Answer(null,"No match — general reply is off",true);
+        return new Answer(KeywordRules.containsRule(fallback)?null:fallback,"No match — general reply",true);
     }
     static Answer choose(Context c,SharedPreferences p,String message){
         if(p.getBoolean("sms_chatbot_mode",p.getBoolean("chatbot_enabled",false)))return chatbot(c,p,message);
@@ -34,9 +37,10 @@ final class BotReplies {
     static String preview(Context c,SharedPreferences p,String message,boolean bot){
         String q=message.trim().toLowerCase(Locale.ROOT);
         if(q.equals("stop")||q.equals("unsubscribe"))return "STOP would pause automatic replies for this sender. This preview changes nothing.";
+        if(q.equals("human"))return "HUMAN would pause automatic replies for this sender. This preview changes nothing.";
         if(q.equals("start"))return "START would allow automatic replies for this sender again. This preview changes nothing.";
         Answer a=bot?chatbot(c,p,message):choose(c,p,message);
-        if(a.text==null||a.text.trim().isEmpty())return "No safe reply is configured. Organise your saved answers first.";
+        if(a.text==null||a.text.trim().isEmpty())return a.source+". No SMS will be sent.";
         return a.source+"\n\n"+ReplySender.disclosure(a.text)+"\n\nPreview only — no SMS sent.";
     }
 }

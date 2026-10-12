@@ -117,8 +117,58 @@ public class ChatbotSetupTest {
         assertEquals("available=>Website",p.getString("chatbot_rules",""));assertNull(a.findViewById(R.id.smsReplyMessageInput));a.finish();
     }
     @Test public void unmatchedQuestionUsesOnlyGeneralReply(){
-        p.edit().putBoolean("sms_chatbot_mode",true).putString("chatbot_rules","available=>Check website").putString("chatbot_fallback","Please leave your message.").apply();
+        p.edit().putBoolean("fallback_enabled",true).putBoolean("sms_chatbot_mode",true).putString("chatbot_rules","available=>Check website").putString("chatbot_fallback","Please leave your message.").apply();
         assertEquals("Please leave your message.",BotReplies.choose(app,p,"Do you have parking?").text);
         assertTrue(BotReplies.preview(app,p,"Do you have parking?",false).contains("Please leave your message."));
+    }
+    @Test public void cancelDoesNotSaveAndEditSurvivesActivityRecreation(){
+        BotSetup.save(p,Arrays.asList(new KeywordRules.Rule("price","Approved text")));
+        KeywordsActivity a=screen();button(a.findViewById(android.R.id.content),"Edit answer").performClick();idle();
+        AlertDialog dialog=(AlertDialog)ShadowDialog.getLatestDialog();
+        assertEquals("Save Changes",dialog.getButton(AlertDialog.BUTTON_POSITIVE).getText().toString());
+        ((EditText)dialog.findViewById(R.id.newReplyInput)).setText("Discard this");
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();idle();
+        assertEquals("Approved text",BotSetup.read(p).get(0).reply);
+        button(a.findViewById(android.R.id.content),"Edit answer").performClick();idle();
+        dialog=(AlertDialog)ShadowDialog.getLatestDialog();
+        ((EditText)dialog.findViewById(R.id.newReplyInput)).setText("Updated approved text");
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();idle();a.finish();
+        KeywordsActivity reopened=screen();
+        assertEquals("Updated approved text",BotSetup.read(BusinessProfiles.prefs(reopened,11)).get(0).reply);
+        assertTrue(BotSetup.read(BusinessProfiles.prefs(reopened,22)).isEmpty());reopened.finish();
+    }
+    @Test public void fallbackDefaultsOffAndClaimIsDurableAndSimScoped(){
+        assertNull(BotReplies.chatbot(app,p,"Unmatched").text);
+        p.edit().putBoolean("fallback_enabled",true).commit();
+        assertNotNull(BotReplies.chatbot(app,p,"Unmatched").text);
+        assertTrue(ConversationPolicy.claimFallback(p,"+61400000000"));
+        assertFalse(ConversationPolicy.claimFallback(BusinessProfiles.prefs(app,11),"+61400000000"));
+        assertTrue(ConversationPolicy.claimFallback(BusinessProfiles.prefs(app,22),"+61400000000"));
+        ConversationPolicy.setPaused(p,"+61400000000",false);
+        assertTrue(ConversationPolicy.claimFallback(p,"+61400000000"));
+    }
+    @Test public void humanCommandAndOwnerTakeoverSuppressMatchedReplies(){
+        p.edit().putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true)
+            .putBoolean("sms_chatbot_mode",true).putString("chatbot_rules","price=>Approved price").commit();
+        SmsReplyReceiver receiver=new SmsReplyReceiver();
+        receiver.handleMessage(app,11,"+61400000000","HUMAN");
+        assertTrue(ConversationPolicy.paused(p,"+61400000000"));
+        assertFalse(ConversationPolicy.paused(BusinessProfiles.prefs(app,22),"+61400000000"));
+        receiver.handleMessage(app,11,"+61400000000","price");
+        assertNull(shadowOf(SmsManager.getSmsManagerForSubscriptionId(11)).getLastSentTextMessageParams());
+        ConversationPolicy.setPaused(p,"+61400000000",false);
+        p.edit().putBoolean("human_takeover",true).commit();
+        receiver.handleMessage(app,11,"+61400000000","price");
+        assertNull(shadowOf(SmsManager.getSmsManagerForSubscriptionId(11)).getLastSentTextMessageParams());
+    }
+    @Test public void fallbackNeverRepeatsAfterCooldownAndRestartedReceiver(){
+        p.edit().putBoolean("master_enabled",true).putBoolean("reply_to_incoming_sms",true)
+            .putBoolean("sms_chatbot_mode",true).putBoolean("fallback_enabled",true).commit();
+        new SmsReplyReceiver().handleMessage(app,11,"+61400000000","Unmatched");
+        ShadowSmsManager manager=shadowOf(SmsManager.getSmsManagerForSubscriptionId(11));
+        assertNotNull(manager.getLastSentTextMessageParams());manager.clearLastSentTextMessageParams();
+        p.edit().putLong("chat_last_"+Integer.toHexString("+61400000000".hashCode()),0).commit();
+        new SmsReplyReceiver().handleMessage(app,11,"+61400000000","Still unmatched");
+        assertNull(manager.getLastSentTextMessageParams());
     }
 }
