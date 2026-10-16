@@ -23,10 +23,16 @@ public class AutoReplySettingsActivity extends ProfileActivity {
     private Switch smsChatbotModeSwitch;
     private Switch missedCallMenuSwitch;
     private boolean refreshBotMode;
+    private String fallbackBeforeSetup, plainBeforeSetup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState!=null){
+            refreshBotMode=savedInstanceState.getBoolean("refresh_bot_mode",false);
+            fallbackBeforeSetup=savedInstanceState.getString("fallback_before_setup");
+            plainBeforeSetup=savedInstanceState.getString("plain_before_setup");
+        }
         setContentView(R.layout.activity_auto_reply_settings);
 
         findViewById(R.id.backToDashboardButton).setOnClickListener(v -> finish());
@@ -99,7 +105,7 @@ public class AutoReplySettingsActivity extends ProfileActivity {
             }
             int[] values = {7, 14, 30};
             int retentionDays = values[Math.max(0, Math.min(retentionSpinner.getSelectedItemPosition(), 2))];
-            prefs.edit()
+            boolean saved=prefs.edit()
                     .putString("sms_reply_message", plainSmsMessage)
                     .putBoolean("sms_chatbot_mode", smsChatbotModeSwitch.isChecked())
                     .putBoolean("missed_call_include_menu", missedCallMenuSwitch.isChecked())
@@ -112,17 +118,34 @@ public class AutoReplySettingsActivity extends ProfileActivity {
                     .putBoolean("reply_to_incoming_sms", smsSwitch.isChecked())
                     .putBoolean("auto_delete_logs", autoDeleteSwitch.isChecked())
                     .putInt("call_log_retention_days", retentionDays)
-                    .apply();
+                    .commit();
+            if(!saved){BasicUi.error(this,new IllegalStateException("Could not save. Please try again."));return;}
             AppCallLogStore.purge(this);
             Toast.makeText(this, "Auto reply settings saved", Toast.LENGTH_SHORT).show();
         });
     }
-    private void openBotSetup(){refreshBotMode=true;openProfile(KeywordsActivity.class);}
+    @Override protected void onSaveInstanceState(Bundle state){
+        state.putBoolean("refresh_bot_mode",refreshBotMode);
+        state.putString("fallback_before_setup",fallbackBeforeSetup);
+        state.putString("plain_before_setup",plainBeforeSetup);
+        super.onSaveInstanceState(state);
+    }
+    private void openBotSetup(){
+        SharedPreferences p=BusinessProfiles.prefs(this,businessId);
+        fallbackBeforeSetup=p.getString("chatbot_fallback",getString(R.string.default_chatbot_fallback));
+        plainBeforeSetup=p.getString("sms_reply_message",getString(R.string.default_plain_sms_reply));
+        refreshBotMode=true;openProfile(KeywordsActivity.class);
+    }
     @Override protected void onResume(){
         super.onResume();
         if(smsReplyMessageInput==null)return;
         SharedPreferences p=BusinessProfiles.prefs(this,businessId);
         if(refreshBotMode){
+            String fallback=p.getString("chatbot_fallback",getString(R.string.default_chatbot_fallback));
+            String plain=p.getString("sms_reply_message",getString(R.string.default_plain_sms_reply));
+            // Keep local drafts unless setup actually changed the corresponding saved field.
+            if(!java.util.Objects.equals(fallbackBeforeSetup,fallback))smsReplyMessageInput.setText(fallback);
+            if(!java.util.Objects.equals(plainBeforeSetup,plain))plainSmsMessageInput.setText(plain);
             masterSwitch.setChecked(p.getBoolean("master_enabled",false));
             smsSwitch.setChecked(p.getBoolean("reply_to_incoming_sms",false));
             smsChatbotModeSwitch.setChecked(p.getBoolean("sms_chatbot_mode",false));
@@ -149,3 +172,4 @@ public class AutoReplySettingsActivity extends ProfileActivity {
         findViewById(R.id.chatbotFallbackSection).setVisibility(chatbot ? android.view.View.VISIBLE : android.view.View.GONE);
     }
 }
+

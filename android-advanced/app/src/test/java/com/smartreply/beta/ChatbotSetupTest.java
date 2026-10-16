@@ -172,4 +172,55 @@ public class ChatbotSetupTest {
         new SmsReplyReceiver().handleMessage(app,11,"+61400000000","Still unmatched");
         assertNull(manager.getLastSentTextMessageParams());
     }
+    @Test public void returningFromSetupDoesNotOverwriteNewlySavedFallback(){
+        p.edit().putString("chatbot_fallback","Old general reply").commit();
+        org.robolectric.android.controller.ActivityController<AutoReplySettingsActivity> controller=Robolectric.buildActivity(AutoReplySettingsActivity.class,new Intent(app,AutoReplySettingsActivity.class).putExtra(BusinessProfiles.EXTRA,11)).setup();
+        AutoReplySettingsActivity a=controller.get();a.findViewById(R.id.openChatbotSetupButton).performClick();controller.pause();
+        p.edit().putString("chatbot_fallback","New approved general reply").commit();controller.resume();
+        assertEquals("New approved general reply",((EditText)a.findViewById(R.id.smsReplyMessageInput)).getText().toString());
+        a.findViewById(R.id.saveAutoReplyButton).performClick();
+        assertEquals("New approved general reply",p.getString("chatbot_fallback",""));controller.pause().stop().destroy();
+    }
+    @Test public void setupWithoutChangesPreservesUnsavedFallbackDraft(){
+        p.edit().putString("chatbot_fallback","Saved general reply").commit();
+        org.robolectric.android.controller.ActivityController<AutoReplySettingsActivity> controller=Robolectric.buildActivity(AutoReplySettingsActivity.class,new Intent(app,AutoReplySettingsActivity.class).putExtra(BusinessProfiles.EXTRA,11)).setup();
+        AutoReplySettingsActivity a=controller.get();((EditText)a.findViewById(R.id.smsReplyMessageInput)).setText("Unsaved draft");
+        a.findViewById(R.id.openChatbotSetupButton).performClick();controller.pause().resume();
+        assertEquals("Unsaved draft",((EditText)a.findViewById(R.id.smsReplyMessageInput)).getText().toString());controller.pause().stop().destroy();
+    }
+    @Test public void answerSaveReportsFailureAndDoesNotClaimSuccess(){
+        BotSetup.save(p,Arrays.asList(new KeywordRules.Rule("price","Original")));
+        try{BotSetup.save(FailingPreferences.wrap(p),Arrays.asList(new KeywordRules.Rule("price","Changed")));fail("Expected failed save");}
+        catch(IllegalStateException expected){assertTrue(expected.getMessage().contains("Could not save"));}
+        assertEquals("Original",BotSetup.read(p).get(0).reply);
+    }
+    public static class FailedSettingsActivity extends AutoReplySettingsActivity {
+        @Override public SharedPreferences getSharedPreferences(String name,int mode){
+            SharedPreferences p=super.getSharedPreferences(name,mode);
+            return BusinessProfiles.LEGACY.equals(name) ? FailingPreferences.wrap(p) : p;
+        }
+    }
+    @Test public void autoReplySettingsReportsFailedCommitWithoutSavedToast(){
+        p.edit().putString("message","Original missed reply").commit();
+        FailedSettingsActivity a=Robolectric.buildActivity(FailedSettingsActivity.class,new Intent(app,FailedSettingsActivity.class).putExtra(BusinessProfiles.EXTRA,11)).setup().get();
+        ((EditText)a.findViewById(R.id.missedCallMessageInput)).setText("Changed missed reply");
+        a.findViewById(R.id.saveAutoReplyButton).performClick();idle();
+        assertEquals("Original missed reply",p.getString("message",""));
+        assertEquals("Could not save. Please try again.",ShadowToast.getTextOfLatestToast());a.finish();
+    }
+    @Test public void recreatedSettingsReturningFromSetupCannotRestoreStaleFallback(){
+        p.edit().putString("chatbot_fallback","Old general reply").commit();
+        Intent intent=new Intent(app,AutoReplySettingsActivity.class).putExtra(BusinessProfiles.EXTRA,11);
+        org.robolectric.android.controller.ActivityController<AutoReplySettingsActivity> old=Robolectric.buildActivity(AutoReplySettingsActivity.class,intent).setup();
+        old.get().findViewById(R.id.openChatbotSetupButton).performClick();
+        android.os.Bundle state=new android.os.Bundle();old.pause().saveInstanceState(state).stop().destroy();
+        p.edit().putString("chatbot_fallback","Updated while settings was closed").commit();
+        org.robolectric.android.controller.ActivityController<AutoReplySettingsActivity> restored=Robolectric.buildActivity(AutoReplySettingsActivity.class,intent)
+            .create(state).start().restoreInstanceState(state).resume().visible();
+        AutoReplySettingsActivity a=restored.get();
+        assertEquals("Updated while settings was closed",((EditText)a.findViewById(R.id.smsReplyMessageInput)).getText().toString());
+        a.findViewById(R.id.saveAutoReplyButton).performClick();
+        assertEquals("Updated while settings was closed",p.getString("chatbot_fallback",""));restored.pause().stop().destroy();
+    }
 }
+

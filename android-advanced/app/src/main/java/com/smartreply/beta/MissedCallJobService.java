@@ -79,13 +79,12 @@ public class MissedCallJobService extends JobService {
                 cleanup.remove(entry.getKey());
         cleanup.apply();
     }
-    private void dispatch(PersistableBundle data) {
+    void dispatch(PersistableBundle data) {
         String event=data.getString("event"), number=data.getString("number");
         int id=data.getInt(BusinessProfiles.EXTRA,-1);
         SharedPreferences index=BusinessProfiles.index(this);
-        if (event==null || index.contains(event)) return;
-        // At most one submission, including after duplicate phone-state broadcasts.
-        index.edit().putLong(event,data.getLong("date")).commit();
+        // Fail closed if the durable claim fails; never retry an uncertain submission.
+        if (!IncomingSmsGuard.claimCall(index,event,data.getLong("date"))) return;
         if (!BusinessProfiles.exists(this,id)) return;
         SharedPreferences p=BusinessProfiles.prefs(this,id);
         if (System.currentTimeMillis()-data.getLong("date")>5*60_000L) {
@@ -95,15 +94,14 @@ public class MissedCallJobService extends JobService {
             AppCallLogStore.add(this,id,"MISSED",number,"Skipped: business paused or outside schedule"); return;
         }
         if (number==null || number.trim().isEmpty() || number.startsWith("-")) return;
-        String key=Integer.toHexString(number.hashCode());
-        if (p.getBoolean("chat_opt_out_"+key,false) || p.getBoolean("chat_opt_out_"+Integer.toHexString(RecipientRules.normal(p,number).hashCode()),false)) { Diagnostics.record(this,id,"SKIPPED","Caller opted out"); return; }
+        if (ConversationPolicy.optedOut(p,number)) { Diagnostics.record(this,id,"SKIPPED","Caller opted out"); return; }
         String filter=RecipientRules.reason(p,number);
         if(!"Ready".equals(filter)) { Diagnostics.record(this,id,"SKIPPED",filter); AppCallLogStore.add(this,id,"MISSED",number,"Skipped: "+filter); return; }
         long now=System.currentTimeMillis();
-        long last=p.getLong("last_reply_"+key,0);
-        if (now-last<Math.max(0,p.getInt("repeat_minutes",0))*60_000L) return;
         String message=appendNumberedMenu(p.getString("message",getString(R.string.default_message)),p);
-        if (ReplySender.send(this,id,number,message,"MISSED")) p.edit().putLong("last_reply_"+key,now).apply();
+        if (message==null || message.trim().isEmpty() || KeywordRules.containsRule(message)) return;
+        if (!IncomingSmsGuard.reserveReply(p,number,now,false,"MISSED",Math.max(0,p.getInt("repeat_minutes",0))*60_000L)) return;
+        ReplySender.send(this,id,number,message,"MISSED");
     }
     static String appendNumberedMenu(String message, SharedPreferences prefs) {
         return appendNumberedMenu(message,prefs,prefs.getBoolean("missed_call_include_menu",prefs.getBoolean("menu_enabled",false)));
@@ -127,3 +125,4 @@ public class MissedCallJobService extends JobService {
         return message.trim() + "\n\n" + menu;
     }
 }
+

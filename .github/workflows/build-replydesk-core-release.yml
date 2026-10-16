@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - feature/replydesk-platform-foundation
+      - fix/replydesk-safe-apk-0.6.3
     paths:
       - "android-advanced/**"
       - ".github/workflows/build-replydesk-core-release.yml"
@@ -81,3 +82,4 @@ jobs:
       - name: Remove temporary signing key
         if: always()
         run: rm -f "$RUNNER_TEMP/replydesk-release.jks"
+
