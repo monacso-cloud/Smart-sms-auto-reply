@@ -1,5 +1,7 @@
 package com.smartreply.beta;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,8 @@ public class SmsReplyReceiver extends BroadcastReceiver {
         if (!"android.provider.Telephony.SMS_RECEIVED".equals(intent.getAction())) return;
         Diagnostics.record(context,-1,"SMS_RECEIVED","Android SMS broadcast received");
         // Still persist STOP/HUMAN when sending is revoked. ReplySender checks SEND_SMS.
+        if(context.checkSelfPermission(Manifest.permission.SEND_SMS)!=PackageManager.PERMISSION_GRANTED)
+            Diagnostics.record(context,-1,"SKIPPED","SEND_SMS permission missing");
 
         Bundle bundle = intent.getExtras();
         int subscriptionId = SimRouter.smsSubscription(context, bundle);
